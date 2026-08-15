@@ -1,0 +1,11 @@
+{
+  "name": "Summer Launch",
+  "brand": "Example Studio",
+  "audience": "creative small-business owners",
+  "goal": "Drive qualified traffic to the summer collection",
+  "destinationUrl": "https://example.com/summer",
+  "keywords": ["summer style", "small business", "creative workspace"],
+  "boards": ["Summer Inspiration", "Small Business Ideas"],
+  "pinCount": 6,
+  "callToAction": "Explore the collection"
+}
