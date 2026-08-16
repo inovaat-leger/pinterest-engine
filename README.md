@@ -21,12 +21,13 @@ Edit `campaign.json`, then generate the campaign:
 npm run campaign:generate
 ```
 
-The CLI writes four files:
+The CLI writes five files:
 
 - `output/campaign.json` — complete campaign data
 - `output/pins.csv` — pin copy and creative briefs
 - `output/image-prompts.csv` — image prompts, overlay text, styles, and PNG filenames for design workflows
 - `output/manual-posting.csv` — a posting queue with image filenames and draft status
+- `output/canva-bulk-create.csv` — Canva Bulk Create fields for generating pin designs
 
 Regenerate the same automation-ready exports explicitly with:
 

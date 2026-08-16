@@ -297,16 +297,42 @@ function visualStyle(creativeBrief: string): string {
   return "Modern editorial travel graphic, useful and mobile-readable, vertical 2:3";
 }
 
+function imagePrompt(pin: Pin): string {
+  return `Create a Pinterest pin in vertical 2:3 format. ${pin.creativeBrief}`;
+}
+
+function subtitle(pin: Pin): string {
+  const firstSentence = pin.description.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? pin.keywords.join(" • ");
+  if (firstSentence.length <= 120) return firstSentence;
+  const shortened = firstSentence.slice(0, 117).replace(/\s+\S*$/, "").trimEnd();
+  return `${shortened}...`;
+}
+
 function toImagePromptsCsv(pins: Pin[]): string {
   const header = ["id", "title", "destination_url", "image_prompt", "overlay_text", "visual_style", "filename_slug"];
   const rows = pins.map((pin) => [
     pin.id,
     pin.title,
     pin.destinationUrl,
-    `Create a Pinterest pin in vertical 2:3 format. ${pin.creativeBrief}`,
+    imagePrompt(pin),
     overlayText(pin),
     visualStyle(pin.creativeBrief),
     filenameSlug(pin),
+  ]);
+  return rowsToCsv([header, ...rows]);
+}
+
+function toCanvaBulkCreateCsv(pins: Pin[], config: CampaignConfig): string {
+  const header = ["filename", "title", "subtitle", "overlay_text", "destination_url", "visual_prompt", "brand", "category"];
+  const rows = pins.map((pin) => [
+    filenameSlug(pin),
+    pin.title,
+    subtitle(pin),
+    overlayText(pin),
+    pin.destinationUrl,
+    imagePrompt(pin),
+    config.brand,
+    pin.board,
   ]);
   return rowsToCsv([header, ...rows]);
 }
@@ -338,6 +364,7 @@ async function writeCampaignOutputs({ config: configFile, output }: GenerateOpti
     writeFile(path.join(outputDir, "pins.csv"), toPinsCsv(pins)),
     writeFile(path.join(outputDir, "image-prompts.csv"), toImagePromptsCsv(pins)),
     writeFile(path.join(outputDir, "manual-posting.csv"), toManualPostingCsv(pins)),
+    writeFile(path.join(outputDir, "canva-bulk-create.csv"), toCanvaBulkCreateCsv(pins, config)),
   ]);
   console.log(`${action} ${pins.length} pins and automation exports in ${outputDir}`);
 }
