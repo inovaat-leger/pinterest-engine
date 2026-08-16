@@ -1,11 +1,25 @@
 {
-  "name": "Summer Launch",
-  "brand": "Example Studio",
-  "audience": "creative small-business owners",
-  "goal": "Drive qualified traffic to the summer collection",
-  "destinationUrl": "https://example.com/summer",
-  "keywords": ["summer style", "small business", "creative workspace"],
-  "boards": ["Summer Inspiration", "Small Business Ideas"],
-  "pinCount": 6,
-  "callToAction": "Explore the collection"
+  "name": "Philippines Arrival Kit",
+  "brand": "StampdUp Travel",
+  "audience": "first-time Philippines travelers and digital nomads",
+  "goal": "Drive traffic to the Philippines Arrival Kit landing page and free arrival checklist",
+  "destinationUrl": "https://travel.stampdup.com/philippines-arrival-kit",
+  "keywords": [
+    "Philippines eSIM",
+    "Manila travel tips",
+    "Philippines travel checklist",
+    "digital nomad Philippines",
+    "first 72 hours Philippines",
+    "Philippines airport arrival tips",
+    "Philippines money and ATM tips",
+    "Manila airport transportation"
+  ],
+  "boards": [
+    "Philippines Travel Tips",
+    "Digital Nomad Travel",
+    "Asia Travel Planning",
+    "Travel Tech"
+  ],
+  "pinCount": 25,
+  "callToAction": "Get the free arrival checklist"
 }

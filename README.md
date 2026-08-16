@@ -34,6 +34,12 @@ npm run build
 npm start -- generate --config campaign.example.json
 ```
 
+## Destination strategy
+
+`destinationUrl` should usually point to a campaign-specific landing page for a useful product, resource, or free checklist. Pinterest copy and creative briefs should lead with practical value and match what visitors will find on that page.
+
+Affiliate links generally belong inside the digital product, on the landing page, or in follow-up emails, where recommendations can be presented with context and appropriate disclosures. A direct affiliate URL can be tested later when it suits a campaign, but it is optional rather than the default strategy.
+
 ## Scope
 
 This version generates campaign assets locally. It does not publish pins or create paid Pinterest ads. Those operations require a Pinterest developer app, an access token with the appropriate scopes, an advertiser or board ID, and API integration. Secrets should go in `.env`, which is ignored by Git.
