@@ -90,7 +90,8 @@ test("checklist route is usable, printable, and downloadable", async () => {
   const html = await response.text();
   assert.equal(response.status, 200);
   assert.match(html, /Free Philippines Arrival Checklist/);
-  assert.match(html, /onclick="window\.print\(\)"/);
+  assert.match(html, /\/events\/print\?utm_medium=social/);
+  assert.match(html, /window\.print\(\)/);
   assert.match(html, /type="checkbox"/);
   assert.match(html, /philippines-arrival-checklist\.txt\?utm_medium=social/);
   assert.doesNotMatch(html, /coming soon/i);
@@ -101,6 +102,9 @@ test("checklist route is usable, printable, and downloadable", async () => {
   assert.match(download.headers.get("content-type") ?? "", /^text\/plain/);
   assert.match(download.headers.get("content-disposition") ?? "", /^attachment;/);
   assert.match(text, /\[ \] Confirm your phone supports eSIM/);
+
+  const printEvent = await fetch(`${baseUrl}/events/print?utm_medium=social&utm_content=pin_002`, { method: "POST" });
+  assert.equal(printEvent.status, 204);
 });
 
 test("approved PNG assets are served with the correct content type", async () => {

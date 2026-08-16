@@ -1,6 +1,6 @@
 # pinterest-engine
 
-A Node.js + TypeScript CLI that turns a campaign configuration into a local Pinterest campaign plan, pin copy, creative briefs, and an import-friendly CSV.
+A Node.js + TypeScript CLI and lightweight website for generating, tracking, and reviewing Pinterest campaign experiments.
 
 ## Requirements
 
@@ -21,7 +21,7 @@ Edit `campaign.json`, then generate the campaign:
 npm run campaign:generate
 ```
 
-The CLI writes six files:
+The CLI writes nine files:
 
 - `output/campaign.json` — complete campaign data
 - `output/pins.csv` — pin copy and creative briefs
@@ -29,12 +29,28 @@ The CLI writes six files:
 - `output/manual-posting.csv` — a posting queue with image filenames and draft status
 - `output/canva-bulk-create.csv` — Canva Bulk Create fields for generating pin designs
 - `output/pin-image-production.json` — self-contained AI image-production specs for every pin
+- `output/experiment-schedule.csv` — the four-week testing matrix and five reserve concepts
+- `output/performance-entry.csv` — provider-neutral 7-, 30-, and 90-day metric-entry template
+- `output/experiment-manifest.json` — complete machine-readable Pin, experiment, tracking, publication, and review metadata
 
 Regenerate the same automation-ready exports explicitly with:
 
 ```bash
 npm run campaign:export
 ```
+
+The Philippines campaign produces a deliberate 20-Pin sprint—five Pins per week for four weeks—with five concepts held in reserve. Pin #1 is the existing untagged baseline. Pins #2 onward receive stable, unique Pinterest organic UTM URLs. See the [experiment operating guide](docs/PINTEREST_EXPERIMENT_OPERATIONS.md) for the schedule, Pin/experiment IDs, reserve policy, publication workflow, event mapping, performance imports, report commands, and interpretation limits.
+
+Import completed performance rows and produce reports with:
+
+```bash
+npm run campaign:performance:import -- --input output/performance-entry.csv
+npm run campaign:report -- --window 7
+npm run campaign:report -- --window 30
+npm run campaign:report -- --window 90
+```
+
+Snapshots remain distinct by Pin and review window in `data/performance-snapshots.json`. Blank values mean missing data; zero means an observed zero. Reports are available as JSON and Markdown under `output/reports/`, calculate rates without division-by-zero, and flag results below 1,000 impressions as small samples. Seven-day results are early signals, 30-day results support meaningful comparisons, and 90-day results assess durability and business value.
 
 You can choose other paths:
 
@@ -95,7 +111,7 @@ The redirect is marked `nofollow sponsored`, preserves supported UTM parameters,
 
 ### Tracking and privacy
 
-Important internal links preserve `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, and `utm_content`. The server writes small JSON log events for Arrival Kit visits, checklist opens/downloads, and configured recommendation clicks. These events contain a timestamp, route, and UTM labels only; they do not intentionally collect IP addresses, cookies, user-agent strings, account details, or email addresses. No third-party analytics are installed.
+Important internal links preserve `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, and `utm_content`. The server writes small JSON log events for Arrival Kit visits, checklist opens/downloads, print actions, and configured recommendation clicks. These events contain a timestamp, route, and UTM labels only; they do not intentionally collect IP addresses, cookies, user-agent strings, account details, or email addresses. No third-party analytics are installed. The operating guide maps these event names and `utm_content` values to performance fields.
 
 ## Destination strategy
 
@@ -105,4 +121,4 @@ Affiliate links generally belong inside the digital product, on the landing page
 
 ## Scope
 
-This version generates campaign assets locally. It does not publish pins or create paid Pinterest ads. Those operations require a Pinterest developer app, an access token with the appropriate scopes, an advertiser or board ID, and API integration. Secrets should go in `.env`, which is ignored by Git.
+This version generates campaign assets and reports locally. Publishing and scheduling remain manual or externally managed: the engine does not publish Pins, connect to a social account, or create paid Pinterest ads. Secrets should go in `.env`, which is ignored by Git.

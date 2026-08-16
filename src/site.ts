@@ -366,12 +366,13 @@ function checklistPage(url: URL): string {
   logEvent("arrival_checklist_open", url);
   const downloadHref = trackedHref("/philippines-arrival-checklist.txt", url);
   const kitHref = trackedHref("/philippines-arrival-kit", url);
+  const printEventHref = trackedHref("/events/print", url);
   const groups = checklistGroups.map((group, groupIndex) => `<section class="check-group"><h2>${escapeHtml(group.title)}</h2>${group.items.map((item, itemIndex) => `<label class="check-row"><input type="checkbox" aria-label="${escapeHtml(item)}"><span>${escapeHtml(item)}</span></label>`).join("")}</section>`).join("");
   return page({
     title: "Free Philippines Arrival Checklist | StampdUp Travel",
     description: "A free printable Philippines arrival checklist for documents, eSIM preparation, money backup, airport transfer, and the first 72 hours.",
     canonicalPath: "/philippines-arrival-checklist",
-    body: `<section class="hero"><div class="wrap"><p class="eyebrow">Free · No signup required</p><h1>Philippines Arrival Checklist</h1><p class="lead">A practical checklist for the handoffs between departure, airport arrival, hotel check-in, and your first 72 hours.</p><div class="actions no-print"><button class="button" type="button" onclick="window.print()">Print checklist</button><a class="button secondary" href="${downloadHref}" download>Download text checklist</a><a href="${kitHref}">Back to the full Arrival Kit</a></div><p class="trust-note">Verify current official entry requirements separately. Procedures and provider behavior can change.</p></div></section><section class="section alt"><div class="wrap checklist">${groups}</div></section>`,
+    body: `<section class="hero"><div class="wrap"><p class="eyebrow">Free · No signup required</p><h1>Philippines Arrival Checklist</h1><p class="lead">A practical checklist for the handoffs between departure, airport arrival, hotel check-in, and your first 72 hours.</p><div class="actions no-print"><button class="button" type="button" onclick="fetch('${printEventHref}', { method: 'POST', keepalive: true }).catch(() => {}); window.print()">Print checklist</button><a class="button secondary" href="${downloadHref}" download>Download text checklist</a><a href="${kitHref}">Back to the full Arrival Kit</a></div><p class="trust-note">Verify current official entry requirements separately. Procedures and provider behavior can change.</p></div></section><section class="section alt"><div class="wrap checklist">${groups}</div></section>`,
   });
 }
 
@@ -405,6 +406,12 @@ async function serveAsset(pathname: string, response: ServerResponse): Promise<b
 
 async function handleRequest(request: IncomingMessage, response: ServerResponse): Promise<void> {
   const url = new URL(request.url ?? "/", productionOrigin);
+  if (request.method === "POST" && url.pathname === "/events/print") {
+    logEvent("arrival_checklist_print", url);
+    response.writeHead(204, { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" });
+    response.end();
+    return;
+  }
   if (request.method !== "GET" && request.method !== "HEAD") {
     send(response, 405, "application/json; charset=utf-8", JSON.stringify({ error: "Method not allowed" }), { Allow: "GET, HEAD" });
     return;

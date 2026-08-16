@@ -4,6 +4,14 @@
   "audience": "first-time Philippines travelers and digital nomads",
   "goal": "Drive traffic to the Philippines Arrival Kit landing page and free arrival checklist",
   "destinationUrl": "https://travel.stampdup.com/philippines-arrival-kit",
+  "campaignId": "philippines_arrival_kit",
+  "experiment": {
+    "id": "philippines_arrival_kit_4_week_2026_08",
+    "startDate": "2026-08-17",
+    "timezone": "America/Chicago",
+    "publicationTime": "09:00:00-05:00",
+    "utmCampaign": "philippines_arrival_kit"
+  },
   "keywords": [
     "Philippines eSIM",
     "Manila travel tips",

@@ -2,28 +2,11 @@
 import { Command } from "commander";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { rowsToCsv } from "./csv.js";
+import { buildExperimentPins, experimentConfig, extractOverlayText, pinFilename, type CampaignConfig, type ExperimentPin, type SourcePin } from "./experiment.js";
+import { buildCampaignReport, campaignReportMarkdown, emptyPerformanceStore, mergePerformanceSnapshots, parsePerformanceImport, validatePerformanceStore, type PerformanceStore, type ReviewWindow } from "./performance.js";
 
-type CampaignConfig = {
-  name: string;
-  brand: string;
-  audience: string;
-  goal: string;
-  destinationUrl: string;
-  keywords: string[];
-  boards: string[];
-  pinCount?: number;
-  callToAction?: string;
-};
-
-type Pin = {
-  id: number;
-  board: string;
-  title: string;
-  description: string;
-  destinationUrl: string;
-  creativeBrief: string;
-  keywords: string[];
-};
+type Pin = SourcePin;
 
 const sample: CampaignConfig = {
   name: "My Pinterest Campaign",
@@ -53,6 +36,16 @@ function validate(input: unknown): CampaignConfig {
   }
   if (value.pinCount !== undefined && (!Number.isInteger(value.pinCount) || (value.pinCount as number) < 1 || (value.pinCount as number) > 100)) {
     throw new Error('Config field "pinCount" must be an integer from 1 to 100.');
+  }
+  if (value.campaignId !== undefined && (typeof value.campaignId !== "string" || !/^[a-z0-9_]+$/.test(value.campaignId))) {
+    throw new Error('Config field "campaignId" must use lowercase letters, numbers, and underscores.');
+  }
+  if (value.experiment !== undefined) {
+    if (!value.experiment || typeof value.experiment !== "object") throw new Error('Config field "experiment" must be an object.');
+    const experiment = value.experiment as Record<string, unknown>;
+    for (const key of ["id", "startDate", "timezone", "publicationTime", "utmCampaign"]) {
+      if (typeof experiment[key] !== "string" || experiment[key].trim() === "") throw new Error(`Config experiment field "${key}" must be a non-empty string.`);
+    }
   }
   return value as CampaignConfig;
 }
@@ -256,36 +249,10 @@ function generatePins(config: CampaignConfig): Pin[] {
   });
 }
 
-function csvCell(value: string | number): string {
-  const text = String(value);
-  return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
-}
-
-function rowsToCsv(rows: Array<Array<string | number>>): string {
-  return rows.map((row) => row.map(csvCell).join(",")).join("\n") + "\n";
-}
-
-function toPinsCsv(pins: Pin[]): string {
-  const header = ["id", "board", "title", "description", "destination_url", "creative_brief", "keywords"];
-  const rows = pins.map((pin) => [pin.id, pin.board, pin.title, pin.description, pin.destinationUrl, pin.creativeBrief, pin.keywords.join(" | ")]);
+function toPinsCsv(pins: ExperimentPin[]): string {
+  const header = ["id", "pin_id", "campaign_id", "experiment_id", "test_week", "topic_pillar", "primary_search_phrase", "secondary_keywords", "traveler_intent", "creative_format", "hook", "on_image_text", "title", "description", "call_to_action", "board", "topic_tags", "alt_text", "image_filename", "image_public_url", "base_destination_url", "tracked_destination_url", "destination_url", "planned_publication_at", "publication_status", "published_pin_url", "review_7_date", "review_30_date", "review_90_date", "experiment_notes", "creative_brief", "keywords"];
+  const rows = pins.map((pin) => [pin.id, pin.pinId, pin.campaignId, pin.experimentId, pin.testWeek, pin.topicPillar, pin.primarySearchPhrase, pin.secondaryKeywords.join(" | "), pin.travelerIntent, pin.creativeFormat, pin.hook, pin.onImageText, pin.title, pin.description, pin.callToAction, pin.board, pin.topicTags.join(" | "), pin.altText, pin.imageFilename, pin.imagePublicUrl, pin.baseDestinationUrl, pin.trackedDestinationUrl, pin.trackedDestinationUrl, pin.plannedPublicationAt, pin.publicationStatus, pin.publishedPinUrl, pin.reviewDates.day7, pin.reviewDates.day30, pin.reviewDates.day90, pin.experimentNotes, pin.creativeBrief, pin.keywords.join(" | ")]);
   return rowsToCsv([header, ...rows]);
-}
-
-function overlayText(pin: Pin): string {
-  const match = pin.creativeBrief.match(/\b(?:overlay|headline):?\s*[“"]([^”"]+)[”"]/i);
-  return match?.[1]?.trim() || pin.title.replace(/\s+—\s+Part\s+\d+$/i, "").trim();
-}
-
-function filenameSlug(pin: Pin): string {
-  const slug = pin.title
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[’']/g, "")
-    .replace(/&/g, " and ")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return `${slug || `pin-${pin.id}`}.png`;
 }
 
 function visualStyle(creativeBrief: string): string {
@@ -297,38 +264,38 @@ function visualStyle(creativeBrief: string): string {
   return "Modern editorial travel graphic, useful and mobile-readable, vertical 2:3";
 }
 
-function imagePrompt(pin: Pin): string {
+function imagePrompt(pin: ExperimentPin): string {
   return `Create a Pinterest pin in vertical 2:3 format. ${pin.creativeBrief}`;
 }
 
-function subtitle(pin: Pin): string {
+function subtitle(pin: ExperimentPin): string {
   const firstSentence = pin.description.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? pin.keywords.join(" • ");
   if (firstSentence.length <= 120) return firstSentence;
   const shortened = firstSentence.slice(0, 117).replace(/\s+\S*$/, "").trimEnd();
   return `${shortened}...`;
 }
 
-function toImagePromptsCsv(pins: Pin[]): string {
+function toImagePromptsCsv(pins: ExperimentPin[]): string {
   const header = ["id", "title", "destination_url", "image_prompt", "overlay_text", "visual_style", "filename_slug"];
   const rows = pins.map((pin) => [
     pin.id,
     pin.title,
     pin.destinationUrl,
     imagePrompt(pin),
-    overlayText(pin),
+    extractOverlayText(pin),
     visualStyle(pin.creativeBrief),
-    filenameSlug(pin),
+    pinFilename(pin),
   ]);
   return rowsToCsv([header, ...rows]);
 }
 
-function toCanvaBulkCreateCsv(pins: Pin[], config: CampaignConfig): string {
+function toCanvaBulkCreateCsv(pins: ExperimentPin[], config: CampaignConfig): string {
   const header = ["filename", "title", "subtitle", "overlay_text", "destination_url", "visual_prompt", "brand", "category"];
   const rows = pins.map((pin) => [
-    filenameSlug(pin),
+    pinFilename(pin),
     pin.title,
     subtitle(pin),
-    overlayText(pin),
+    extractOverlayText(pin),
     pin.destinationUrl,
     imagePrompt(pin),
     config.brand,
@@ -339,13 +306,13 @@ function toCanvaBulkCreateCsv(pins: Pin[], config: CampaignConfig): string {
 
 const brandNotes = "Practical, calm, modern, trustworthy, destination-specific, helpful, no hype, no fake urgency.";
 
-function toPinImageProductionJson(pins: Pin[], config: CampaignConfig): string {
+function toPinImageProductionJson(pins: ExperimentPin[], config: CampaignConfig): string {
   const productionPins = pins.map((pin) => {
-    const pinOverlay = overlayText(pin);
+    const pinOverlay = extractOverlayText(pin);
     const pinVisualStyle = visualStyle(pin.creativeBrief);
     return {
       id: pin.id,
-      filename: filenameSlug(pin),
+      filename: pinFilename(pin),
       board: pin.board,
       title: pin.title,
       description: pin.description,
@@ -363,26 +330,89 @@ function toPinImageProductionJson(pins: Pin[], config: CampaignConfig): string {
   return JSON.stringify(productionPins, null, 2) + "\n";
 }
 
-function toManualPostingCsv(pins: Pin[]): string {
-  const header = ["id", "board", "title", "description", "destination_url", "keywords", "image_filename", "status"];
+function toManualPostingCsv(pins: ExperimentPin[]): string {
+  const header = ["id", "pin_id", "image_filename", "image_public_url", "board", "title", "description", "destination_url", "base_destination_url", "tracked_destination_url", "alt_text", "topic_tags", "planned_publication_at", "publication_status", "published_pin_url", "campaign_id", "experiment_id", "test_week", "topic_pillar", "primary_search_phrase", "secondary_keywords", "traveler_intent", "creative_format", "hook", "on_image_text", "call_to_action", "review_7_date", "review_30_date", "review_90_date", "experiment_notes"];
   const rows = pins.map((pin) => [
     pin.id,
+    pin.pinId,
+    pin.imageFilename,
+    pin.imagePublicUrl,
     pin.board,
     pin.title,
     pin.description,
-    pin.destinationUrl,
-    pin.keywords.join(" | "),
-    filenameSlug(pin),
-    "draft",
+    pin.trackedDestinationUrl,
+    pin.baseDestinationUrl,
+    pin.trackedDestinationUrl,
+    pin.altText,
+    pin.topicTags.join(" | "),
+    pin.plannedPublicationAt,
+    pin.publicationStatus,
+    pin.publishedPinUrl,
+    pin.campaignId,
+    pin.experimentId,
+    pin.testWeek,
+    pin.topicPillar,
+    pin.primarySearchPhrase,
+    pin.secondaryKeywords.join(" | "),
+    pin.travelerIntent,
+    pin.creativeFormat,
+    pin.hook,
+    pin.onImageText,
+    pin.callToAction,
+    pin.reviewDates.day7,
+    pin.reviewDates.day30,
+    pin.reviewDates.day90,
+    pin.experimentNotes,
   ]);
   return rowsToCsv([header, ...rows]);
+}
+
+function toExperimentScheduleCsv(pins: ExperimentPin[]): string {
+  const header = ["pin_id", "source_concept_id", "test_week", "schedule_slot", "reserve", "planned_publication_at", "publication_status", "topic_pillar", "primary_search_phrase", "traveler_intent", "creative_format", "hook", "on_image_text", "title", "board", "tracked_destination_url", "review_7_date", "review_30_date", "review_90_date", "experiment_notes"];
+  const rows = pins.map((pin) => [pin.pinId, pin.sourceConceptId, pin.testWeek, pin.scheduleSlot, pin.isReserve ? "yes" : "no", pin.plannedPublicationAt, pin.publicationStatus, pin.topicPillar, pin.primarySearchPhrase, pin.travelerIntent, pin.creativeFormat, pin.hook, pin.onImageText, pin.title, pin.board, pin.trackedDestinationUrl, pin.reviewDates.day7, pin.reviewDates.day30, pin.reviewDates.day90, pin.experimentNotes]);
+  return rowsToCsv([header, ...rows]);
+}
+
+function toPerformanceEntryCsv(pins: ExperimentPin[]): string {
+  const header = ["pin_id", "review_window", "review_date", "impressions", "saves", "pin_clicks", "outbound_clicks", "arrival_kit_visits", "checklist_opens", "checklist_downloads", "print_actions", "email_signups", "affiliate_clicks", "affiliate_revenue", "notes"];
+  const rows = pins.filter((pin) => !pin.isReserve).flatMap((pin) => ([
+    [pin.pinId, "7", pin.reviewDates.day7, "", "", "", "", "", "", "", "", "", "", "", ""],
+    [pin.pinId, "30", pin.reviewDates.day30, "", "", "", "", "", "", "", "", "", "", "", ""],
+    [pin.pinId, "90", pin.reviewDates.day90, "", "", "", "", "", "", "", "", "", "", "", ""],
+  ]));
+  return rowsToCsv([header, ...rows]);
+}
+
+function experimentManifest(config: CampaignConfig, pins: ExperimentPin[]): object {
+  const experiment = experimentConfig(config);
+  return {
+    schemaVersion: 1,
+    campaign: {
+      id: config.campaignId ?? "philippines_arrival_kit",
+      name: config.name,
+      baseDestinationUrl: config.destinationUrl,
+    },
+    experiment: {
+      id: experiment.id,
+      startDate: experiment.startDate,
+      timezone: experiment.timezone,
+      publicationTime: experiment.publicationTime,
+      utmCampaign: experiment.utmCampaign,
+      baselinePinId: "pin_001",
+      activePinCount: pins.filter((pin) => !pin.isReserve).length,
+      reservePinCount: pins.filter((pin) => pin.isReserve).length,
+      policy: "Five Pins per week for four weeks; five additional concepts remain in reserve.",
+    },
+    pins,
+  };
 }
 
 type GenerateOptions = { config: string; output: string };
 
 async function writeCampaignOutputs({ config: configFile, output }: GenerateOptions, action: "Generated" | "Exported"): Promise<void> {
   const config = validate(JSON.parse(await readFile(path.resolve(configFile), "utf8")));
-  const pins = generatePins(config);
+  const sourcePins = generatePins(config);
+  const pins = buildExperimentPins(config, sourcePins);
   const outputDir = path.resolve(output);
   await mkdir(outputDir, { recursive: true });
   await Promise.all([
@@ -392,8 +422,53 @@ async function writeCampaignOutputs({ config: configFile, output }: GenerateOpti
     writeFile(path.join(outputDir, "manual-posting.csv"), toManualPostingCsv(pins)),
     writeFile(path.join(outputDir, "canva-bulk-create.csv"), toCanvaBulkCreateCsv(pins, config)),
     writeFile(path.join(outputDir, "pin-image-production.json"), toPinImageProductionJson(pins, config)),
+    writeFile(path.join(outputDir, "experiment-schedule.csv"), toExperimentScheduleCsv(pins)),
+    writeFile(path.join(outputDir, "performance-entry.csv"), toPerformanceEntryCsv(pins)),
+    writeFile(path.join(outputDir, "experiment-manifest.json"), JSON.stringify(experimentManifest(config, pins), null, 2) + "\n"),
   ]);
   console.log(`${action} ${pins.length} pins and automation exports in ${outputDir}`);
+}
+
+async function readPerformanceStore(storeFile: string): Promise<PerformanceStore> {
+  try {
+    return validatePerformanceStore(JSON.parse(await readFile(path.resolve(storeFile), "utf8")));
+  } catch (error: unknown) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return emptyPerformanceStore();
+    throw error;
+  }
+}
+
+type PerformanceImportOptions = { input: string; manifest: string; store: string };
+
+async function importPerformance(options: PerformanceImportOptions): Promise<void> {
+  const manifest = JSON.parse(await readFile(path.resolve(options.manifest), "utf8")) as { pins?: Array<{ pinId?: string }> };
+  if (!Array.isArray(manifest.pins)) throw new Error("Experiment manifest is missing its pins array. Run campaign:export first.");
+  const validPinIds = new Set(manifest.pins.map((pin) => pin.pinId).filter((value): value is string => typeof value === "string"));
+  const imported = parsePerformanceImport(await readFile(path.resolve(options.input), "utf8"), validPinIds);
+  const existing = await readPerformanceStore(options.store);
+  const result = mergePerformanceSnapshots(existing, imported);
+  const storePath = path.resolve(options.store);
+  await mkdir(path.dirname(storePath), { recursive: true });
+  await writeFile(storePath, JSON.stringify(result.store, null, 2) + "\n");
+  console.log(`Performance import: ${result.added} added, ${result.updated} updated, ${result.unchanged} unchanged; ${result.store.snapshots.length} stored snapshots.`);
+}
+
+type ReportOptions = { manifest: string; store: string; output: string; window: string; asOf?: string };
+
+async function writeReport(options: ReportOptions): Promise<void> {
+  const window = Number(options.window);
+  if (window !== 7 && window !== 30 && window !== 90) throw new Error(`Report window must be 7, 30, or 90; received ${options.window}.`);
+  const manifest = JSON.parse(await readFile(path.resolve(options.manifest), "utf8"));
+  const store = await readPerformanceStore(options.store);
+  const report = buildCampaignReport(manifest, store, window as ReviewWindow, options.asOf);
+  const outputDir = path.resolve(options.output);
+  await mkdir(outputDir, { recursive: true });
+  const basename = `campaign-report-${window}d`;
+  await Promise.all([
+    writeFile(path.join(outputDir, `${basename}.json`), JSON.stringify(report, null, 2) + "\n"),
+    writeFile(path.join(outputDir, `${basename}.md`), campaignReportMarkdown(report)),
+  ]);
+  console.log(`Wrote ${window}-day JSON and Markdown reports in ${outputDir}.`);
 }
 
 const program = new Command()
@@ -420,6 +495,22 @@ program.command("export")
   .option("-c, --config <file>", "campaign config", "campaign.json")
   .option("-o, --output <directory>", "output directory", "output")
   .action((options: GenerateOptions) => writeCampaignOutputs(options, "Exported"));
+
+program.command("performance-import")
+  .description("Import provider-neutral Pin performance snapshots")
+  .requiredOption("-i, --input <file>", "performance CSV path")
+  .option("-m, --manifest <file>", "experiment manifest path", "output/experiment-manifest.json")
+  .option("-s, --store <file>", "performance snapshot store", "data/performance-snapshots.json")
+  .action((options: PerformanceImportOptions) => importPerformance(options));
+
+program.command("report")
+  .description("Generate machine-readable and Markdown campaign reports")
+  .option("-m, --manifest <file>", "experiment manifest path", "output/experiment-manifest.json")
+  .option("-s, --store <file>", "performance snapshot store", "data/performance-snapshots.json")
+  .option("-o, --output <directory>", "report output directory", "output/reports")
+  .option("-w, --window <days>", "review window: 7, 30, or 90", "30")
+  .option("--as-of <date>", "report as-of date (YYYY-MM-DD)")
+  .action((options: ReportOptions) => writeReport(options));
 
 program.parseAsync().catch((error: unknown) => {
   console.error(error instanceof Error ? error.message : error);

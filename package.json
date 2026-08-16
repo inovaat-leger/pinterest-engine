@@ -14,7 +14,9 @@
     "campaign:init": "node --import tsx src/cli.ts init",
     "campaign:generate": "node --import tsx src/cli.ts generate",
     "campaign:export": "node --import tsx src/cli.ts export",
-    "test": "node --test dist/site.test.js",
+    "campaign:performance:import": "node --import tsx src/cli.ts performance-import",
+    "campaign:report": "node --import tsx src/cli.ts report",
+    "test": "node --test dist/*.test.js",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "engines": {
