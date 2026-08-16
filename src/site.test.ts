@@ -37,19 +37,52 @@ test("homepage uses approved branding and links to the Arrival Kit", async () =>
   assert.match(html, /href="\/philippines-arrival-kit\?utm_source=pinterest&amp;utm_campaign=arrival-kit"/);
 });
 
-test("Arrival Kit includes metadata, practical sections, and disabled affiliate CTA", async () => {
-  const response = await fetch(`${baseUrl}/philippines-arrival-kit?utm_source=pinterest`);
-  const html = await response.text();
-  assert.equal(response.status, 200);
-  assert.match(html, /<link rel="canonical" href="https:\/\/travel\.stampdup\.com\/philippines-arrival-kit">/);
-  assert.match(html, /<meta property="og:title"/);
-  for (const heading of ["Before you fly", "Documents and offline backups", "Phone and eSIM preparation", "Airport arrival order", "Cash, cards, ATMs, and payment backup", "Airport to hotel", "Useful app categories", "Your first 24 hours", "Your first 72 hours", "Digital-nomad connectivity backup", "Common arrival mistakes"]) {
-    assert.match(html, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+test("Arrival Kit includes metadata, practical sections, and the numbered eSIM setup guide", async () => {
+  const previousAffiliateUrl = process.env.AFFILIATE_ESIM_URL;
+  delete process.env.AFFILIATE_ESIM_URL;
+  try {
+    const response = await fetch(`${baseUrl}/philippines-arrival-kit?utm_source=pinterest`);
+    const html = await response.text();
+    assert.equal(response.status, 200);
+    assert.match(html, /<link rel="canonical" href="https:\/\/travel\.stampdup\.com\/philippines-arrival-kit">/);
+    assert.match(html, /<meta property="og:title"/);
+    for (const heading of ["Before you fly", "Documents and offline backups", "Phone and eSIM preparation", "Philippines eSIM setup: the 5-minute version", "Airport arrival order", "Cash, cards, ATMs, and payment backup", "Airport to hotel", "Useful app categories", "Your first 24 hours", "Your first 72 hours", "Digital-nomad connectivity backup", "Common arrival mistakes"]) {
+      assert.match(html, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    }
+    for (const step of ["Check compatibility", "Choose the plan carefully", "Install on reliable Wi-Fi", "Preserve the primary SIM", "Activate at the correct time", "Select the travel data line", "Test before troubleshooting"]) {
+      assert.match(html, new RegExp(`<strong>${step}<\\/strong>`));
+    }
+    assert.match(html, /Exact screens, terminology, roaming requirements, and activation behavior vary by device and provider/);
+    assert.doesNotMatch(html, /<aside class="affiliate-recommendation"/);
+    assert.doesNotMatch(html, /Recommendation not yet configured/);
+    assert.doesNotMatch(html, /Affiliate disclosure:/);
+    assert.doesNotMatch(html, /disabled aria-disabled="true"/);
+    assert.doesNotMatch(html, /coming soon/i);
+  } finally {
+    if (previousAffiliateUrl === undefined) delete process.env.AFFILIATE_ESIM_URL;
+    else process.env.AFFILIATE_ESIM_URL = previousAffiliateUrl;
   }
-  assert.match(html, /Recommendation not yet configured/);
-  assert.match(html, /disabled aria-disabled="true"/);
-  assert.match(html, /Affiliate disclosure:/);
-  assert.doesNotMatch(html, /coming soon/i);
+});
+
+test("configured affiliate URL renders a disclosed CTA and preserves UTM parameters", async () => {
+  const previousAffiliateUrl = process.env.AFFILIATE_ESIM_URL;
+  process.env.AFFILIATE_ESIM_URL = "https://example.com/approved-esim?ref=stampdup";
+  try {
+    const response = await fetch(`${baseUrl}/philippines-arrival-kit?utm_source=pinterest&utm_campaign=arrival-kit`);
+    const html = await response.text();
+    assert.equal(response.status, 200);
+    assert.match(html, /class="affiliate-recommendation"/);
+    assert.match(html, /View the eSIM recommendation/);
+    assert.match(html, /Affiliate disclosure:/);
+    assert.match(html, /href="\/go\/esim\?utm_source=pinterest&amp;utm_campaign=arrival-kit"/);
+
+    const redirect = await fetch(`${baseUrl}/go/esim?utm_source=pinterest&utm_campaign=arrival-kit`, { redirect: "manual" });
+    assert.equal(redirect.status, 302);
+    assert.equal(redirect.headers.get("location"), "https://example.com/approved-esim?ref=stampdup&utm_source=pinterest&utm_campaign=arrival-kit");
+  } finally {
+    if (previousAffiliateUrl === undefined) delete process.env.AFFILIATE_ESIM_URL;
+    else process.env.AFFILIATE_ESIM_URL = previousAffiliateUrl;
+  }
 });
 
 test("checklist route is usable, printable, and downloadable", async () => {
@@ -87,5 +120,5 @@ test("unknown routes and unconfigured affiliate redirect return 404", async () =
 
   const affiliate = await fetch(`${baseUrl}/go/esim`);
   assert.equal(affiliate.status, 404);
-  assert.deepEqual(await affiliate.json(), { error: "Recommendation not configured" });
+  assert.deepEqual(await affiliate.json(), { error: "Not found" });
 });

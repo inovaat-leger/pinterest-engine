@@ -83,7 +83,7 @@ Approved assets are committed without modification in `public/assets/`:
 
 ### Affiliate recommendation configuration
 
-The eSIM guidance and recommendation area are provider-neutral by default. The recommendation button stays disabled, and `/go/esim` returns 404, unless `AFFILIATE_ESIM_URL` contains a valid HTTP or HTTPS URL.
+The eSIM guidance is provider-neutral by default. No recommendation CTA, placeholder, configuration message, or affiliate disclosure is rendered unless `AFFILIATE_ESIM_URL` contains a valid HTTP or HTTPS URL. Without a valid URL, `/go/esim` returns the standard 404 response.
 
 To enable a future vetted recommendation in Railway, set:
 

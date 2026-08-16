@@ -118,9 +118,15 @@ const baseStyles = `
   .callout { padding: 30px; border-left: 6px solid var(--gold); border-radius: 18px; background: #f2f7f4; }
   .callout h2, .callout h3 { margin-top: 0; color: var(--forest); }
   .affiliate-box { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; padding: 32px; border: 2px solid var(--forest); border-radius: 24px; background: var(--paper); }
+  .affiliate-recommendation { display: block; margin-top: 28px; }
   .affiliate-box h2 { margin: 0; color: var(--forest); }
   .affiliate-box p { margin: 8px 0 0; color: var(--muted); }
   .disclosure { margin-top: 18px; font-size: .9rem; color: var(--muted); }
+  .setup-guide { margin-top: 34px; padding: clamp(24px, 5vw, 40px); border-radius: 24px; background: #f2f7f4; }
+  .setup-guide h2 { margin: 0; color: var(--forest-dark); font-size: clamp(1.7rem, 4vw, 2.45rem); line-height: 1.1; }
+  .setup-list { margin: 24px 0 0; padding-left: 28px; }
+  .setup-list li { margin: 16px 0; padding-left: 8px; }
+  .setup-note { margin: 22px 0 0; padding-top: 20px; border-top: 1px solid #cad9d1; color: #38544b; }
   .checklist { display: grid; gap: 24px; }
   .check-group { break-inside: avoid; padding: 26px; border: 1px solid var(--line); border-radius: 20px; background: var(--paper); }
   .check-group h2 { margin: 0 0 15px; color: var(--forest); font-size: 1.35rem; }
@@ -252,18 +258,16 @@ function homePage(url: URL): string {
   });
 }
 
-function affiliateArea(url: URL): string {
-  const destination = affiliateDestination();
-  const action = destination
-    ? `<a class="button" href="${trackedHref("/go/esim", url)}" rel="nofollow sponsored">View the current recommendation</a>`
-    : `<button class="button" type="button" disabled aria-disabled="true">Recommendation not yet configured</button>`;
-  return `<div class="affiliate-box"><div><h2>Provider-neutral eSIM preparation</h2><p>Use the checks above with any provider you are considering. A vetted recommendation can be added here later without changing this guide.</p></div>${action}</div>
-  <p class="disclosure"><strong>Affiliate disclosure:</strong> StampdUp Travel may earn a commission from qualifying purchases at no additional cost to the traveler.</p>`;
+function affiliateArea(url: URL): string | undefined {
+  if (!affiliateDestination()) return undefined;
+  return `<aside class="affiliate-recommendation" aria-label="eSIM recommendation"><div class="affiliate-box"><div><h2>eSIM recommendation</h2><p>Review the plan details, device requirements, and activation instructions before deciding whether it fits your trip.</p></div><a class="button" href="${trackedHref("/go/esim", url)}" rel="nofollow sponsored">View the eSIM recommendation</a></div>
+  <p class="disclosure"><strong>Affiliate disclosure:</strong> StampdUp Travel may earn a commission from qualifying purchases at no additional cost to the traveler.</p></aside>`;
 }
 
 function arrivalKitPage(url: URL): string {
   const checklistHref = trackedHref("/philippines-arrival-checklist", url);
   const downloadHref = trackedHref("/philippines-arrival-checklist.txt", url);
+  const recommendation = affiliateArea(url);
   logEvent("arrival_kit_visit", url);
   return page({
     title: "Philippines Arrival Kit | First 72 Hours | StampdUp Travel",
@@ -289,7 +293,17 @@ function arrivalKitPage(url: URL): string {
       <article class="card"><h3>Hotspot support</h3><p>Check the plan terms and device settings before treating tethering as a remote-work backup.</p></article>
       <article class="card"><h3>Offline instructions</h3><p>Save the installation steps, QR details, support channel, and troubleshooting notes somewhere available offline.</p></article>
       <article class="card"><h3>Test deliberately</h3><p>Confirm the intended data line after arrival and avoid deleting an installed eSIM while troubleshooting.</p></article>
-    </div><div style="margin-top:28px">${affiliateArea(url)}</div></div></section>
+    </div>
+    <div class="setup-guide"><h2>Philippines eSIM setup: the 5-minute version</h2><ol class="setup-list">
+      <li><strong>Check compatibility</strong> — Confirm that the phone supports eSIM and is carrier-unlocked.</li>
+      <li><strong>Choose the plan carefully</strong> — Review coverage, data allowance, validity period, hotspot support, activation rules, and support options.</li>
+      <li><strong>Install on reliable Wi-Fi</strong> — Follow the provider’s instructions and save the QR code, installation details, and support information offline.</li>
+      <li><strong>Preserve the primary SIM</strong> — Do not delete or disable the primary line unnecessarily; decide which line should handle calls, messages, and mobile data.</li>
+      <li><strong>Activate at the correct time</strong> — Some plans begin when installed, while others begin when connected at the destination. Follow the provider’s stated activation rule.</li>
+      <li><strong>Select the travel data line</strong> — After arrival, choose the eSIM for mobile data and enable data roaming only if the provider instructs it.</li>
+      <li><strong>Test before troubleshooting</strong> — Turn off Wi-Fi, test mobile data, and confirm the intended line is active. Do not delete the installed eSIM while troubleshooting.</li>
+    </ol><p class="setup-note"><strong>Exact screens, terminology, roaming requirements, and activation behavior vary by device and provider. Always follow the instructions supplied with the selected plan.</strong></p></div>
+    ${recommendation ?? ""}</div></section>
 
     <section class="section alt"><div class="wrap"><div class="section-heading"><h2>Airport arrival order</h2><p>Exact procedures differ by terminal and itinerary. Use this as an organizing sequence, then follow signs and official instructions.</p></div><div class="grid two">
       <article class="card step"><div class="step-number">1</div><div><h3>Entry process</h3><p>Keep travel documents and accommodation details accessible and follow the current official arrival process.</p></div></article>
@@ -421,7 +435,7 @@ async function handleRequest(request: IncomingMessage, response: ServerResponse)
   if (url.pathname === "/go/esim") {
     const destination = affiliateDestination();
     if (!destination) {
-      send(response, 404, "application/json; charset=utf-8", JSON.stringify({ error: "Recommendation not configured" }));
+      send(response, 404, "application/json; charset=utf-8", JSON.stringify({ error: "Not found" }));
       return;
     }
     for (const [key, value] of trackingParams(url)) destination.searchParams.set(key, value);
