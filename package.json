@@ -14,6 +14,7 @@
     "campaign:init": "node --import tsx src/cli.ts init",
     "campaign:generate": "node --import tsx src/cli.ts generate",
     "campaign:export": "node --import tsx src/cli.ts export",
+    "test": "node --test dist/site.test.js",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "engines": {
