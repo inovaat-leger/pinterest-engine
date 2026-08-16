@@ -261,10 +261,85 @@ function csvCell(value: string | number): string {
   return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 
-function toCsv(pins: Pin[]): string {
+function rowsToCsv(rows: Array<Array<string | number>>): string {
+  return rows.map((row) => row.map(csvCell).join(",")).join("\n") + "\n";
+}
+
+function toPinsCsv(pins: Pin[]): string {
   const header = ["id", "board", "title", "description", "destination_url", "creative_brief", "keywords"];
   const rows = pins.map((pin) => [pin.id, pin.board, pin.title, pin.description, pin.destinationUrl, pin.creativeBrief, pin.keywords.join(" | ")]);
-  return [header, ...rows].map((row) => row.map(csvCell).join(",")).join("\n") + "\n";
+  return rowsToCsv([header, ...rows]);
+}
+
+function overlayText(pin: Pin): string {
+  const match = pin.creativeBrief.match(/\b(?:overlay|headline):?\s*[“"]([^”"]+)[”"]/i);
+  return match?.[1]?.trim() || pin.title.replace(/\s+—\s+Part\s+\d+$/i, "").trim();
+}
+
+function filenameSlug(pin: Pin): string {
+  const slug = pin.title
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[’']/g, "")
+    .replace(/&/g, " and ")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `${slug || `pin-${pin.id}`}.png`;
+}
+
+function visualStyle(creativeBrief: string): string {
+  const text = creativeBrief.toLowerCase();
+  if (text.includes("checklist") || text.includes("check ")) return "Editorial travel checklist, clean icons, high contrast, vertical 2:3";
+  if (text.includes("timeline") || text.includes("itinerary")) return "Editorial travel timeline, clear stages, mobile-first, vertical 2:3";
+  if (text.includes("tutorial") || text.includes("settings")) return "Clean mobile tutorial, simple UI illustrations, vertical 2:3";
+  if (text.includes("photo") || text.includes("scene") || text.includes("workspace")) return "Warm editorial travel photography, bold readable type, vertical 2:3";
+  return "Modern editorial travel graphic, useful and mobile-readable, vertical 2:3";
+}
+
+function toImagePromptsCsv(pins: Pin[]): string {
+  const header = ["id", "title", "destination_url", "image_prompt", "overlay_text", "visual_style", "filename_slug"];
+  const rows = pins.map((pin) => [
+    pin.id,
+    pin.title,
+    pin.destinationUrl,
+    `Create a Pinterest pin in vertical 2:3 format. ${pin.creativeBrief}`,
+    overlayText(pin),
+    visualStyle(pin.creativeBrief),
+    filenameSlug(pin),
+  ]);
+  return rowsToCsv([header, ...rows]);
+}
+
+function toManualPostingCsv(pins: Pin[]): string {
+  const header = ["id", "board", "title", "description", "destination_url", "keywords", "image_filename", "status"];
+  const rows = pins.map((pin) => [
+    pin.id,
+    pin.board,
+    pin.title,
+    pin.description,
+    pin.destinationUrl,
+    pin.keywords.join(" | "),
+    filenameSlug(pin),
+    "draft",
+  ]);
+  return rowsToCsv([header, ...rows]);
+}
+
+type GenerateOptions = { config: string; output: string };
+
+async function writeCampaignOutputs({ config: configFile, output }: GenerateOptions, action: "Generated" | "Exported"): Promise<void> {
+  const config = validate(JSON.parse(await readFile(path.resolve(configFile), "utf8")));
+  const pins = generatePins(config);
+  const outputDir = path.resolve(output);
+  await mkdir(outputDir, { recursive: true });
+  await Promise.all([
+    writeFile(path.join(outputDir, "campaign.json"), JSON.stringify({ campaign: config, pins }, null, 2) + "\n"),
+    writeFile(path.join(outputDir, "pins.csv"), toPinsCsv(pins)),
+    writeFile(path.join(outputDir, "image-prompts.csv"), toImagePromptsCsv(pins)),
+    writeFile(path.join(outputDir, "manual-posting.csv"), toManualPostingCsv(pins)),
+  ]);
+  console.log(`${action} ${pins.length} pins and automation exports in ${outputDir}`);
 }
 
 const program = new Command()
@@ -281,20 +356,16 @@ program.command("init")
   });
 
 program.command("generate")
-  .description("Generate JSON and CSV campaign assets")
+  .description("Generate campaign assets and automation-ready CSV exports")
   .option("-c, --config <file>", "campaign config", "campaign.json")
   .option("-o, --output <directory>", "output directory", "output")
-  .action(async ({ config: configFile, output }: { config: string; output: string }) => {
-    const config = validate(JSON.parse(await readFile(path.resolve(configFile), "utf8")));
-    const pins = generatePins(config);
-    const outputDir = path.resolve(output);
-    await mkdir(outputDir, { recursive: true });
-    await Promise.all([
-      writeFile(path.join(outputDir, "campaign.json"), JSON.stringify({ campaign: config, pins }, null, 2) + "\n"),
-      writeFile(path.join(outputDir, "pins.csv"), toCsv(pins)),
-    ]);
-    console.log(`Generated ${pins.length} pins in ${outputDir}`);
-  });
+  .action((options: GenerateOptions) => writeCampaignOutputs(options, "Generated"));
+
+program.command("export")
+  .description("Export campaign assets for image creation and manual posting")
+  .option("-c, --config <file>", "campaign config", "campaign.json")
+  .option("-o, --output <directory>", "output directory", "output")
+  .action((options: GenerateOptions) => writeCampaignOutputs(options, "Exported"));
 
 program.parseAsync().catch((error: unknown) => {
   console.error(error instanceof Error ? error.message : error);

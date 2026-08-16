@@ -21,7 +21,20 @@ Edit `campaign.json`, then generate the campaign:
 npm run campaign:generate
 ```
 
-The CLI writes `output/campaign.json` and `output/pins.csv`. You can choose other paths:
+The CLI writes four files:
+
+- `output/campaign.json` — complete campaign data
+- `output/pins.csv` — pin copy and creative briefs
+- `output/image-prompts.csv` — image prompts, overlay text, styles, and PNG filenames for design workflows
+- `output/manual-posting.csv` — a posting queue with image filenames and draft status
+
+Regenerate the same automation-ready exports explicitly with:
+
+```bash
+npm run campaign:export
+```
+
+You can choose other paths:
 
 ```bash
 npm run dev -- generate --config campaign.example.json --output output/example
@@ -31,7 +44,7 @@ Build and run the compiled CLI:
 
 ```bash
 npm run build
-npm start -- generate --config campaign.example.json
+node dist/cli.js generate --config campaign.example.json
 ```
 
 ## Destination strategy
