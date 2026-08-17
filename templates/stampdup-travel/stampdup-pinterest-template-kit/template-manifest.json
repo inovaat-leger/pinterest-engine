@@ -1,0 +1,69 @@
+{
+  "version": "1.0",
+  "canvas": {
+    "width": 1000,
+    "height": 1500,
+    "ratio": "2:3"
+  },
+  "colors": {
+    "green": "#064b36",
+    "dark": "#063828",
+    "gold": "#f7b928",
+    "cream": "#f8f3e8",
+    "white": "#ffffff",
+    "coral": "#e96c52",
+    "sky": "#8ec9d2"
+  },
+  "fonts": [
+    "Arial / compatible bold sans-serif"
+  ],
+  "templates": [
+    {
+      "id": "01-hero-photo-headline",
+      "svg": "editable-svg/01-hero-photo-headline.svg",
+      "preview": "png-previews/01-hero-photo-headline.png"
+    },
+    {
+      "id": "02-numbered-checklist",
+      "svg": "editable-svg/02-numbered-checklist.svg",
+      "preview": "png-previews/02-numbered-checklist.png"
+    },
+    {
+      "id": "03-mistakes-warning",
+      "svg": "editable-svg/03-mistakes-warning.svg",
+      "preview": "png-previews/03-mistakes-warning.png"
+    },
+    {
+      "id": "04-side-by-side-comparison",
+      "svg": "editable-svg/04-side-by-side-comparison.svg",
+      "preview": "png-previews/04-side-by-side-comparison.png"
+    },
+    {
+      "id": "05-timeline-steps",
+      "svg": "editable-svg/05-timeline-steps.svg",
+      "preview": "png-previews/05-timeline-steps.png"
+    },
+    {
+      "id": "06-packing-flat-lay",
+      "svg": "editable-svg/06-packing-flat-lay.svg",
+      "preview": "png-previews/06-packing-flat-lay.png"
+    },
+    {
+      "id": "07-safety-alert",
+      "svg": "editable-svg/07-safety-alert.svg",
+      "preview": "png-previews/07-safety-alert.png"
+    },
+    {
+      "id": "08-quick-reference-card",
+      "svg": "editable-svg/08-quick-reference-card.svg",
+      "preview": "png-previews/08-quick-reference-card.png"
+    }
+  ],
+  "prohibitions": [
+    "visible internal Pin IDs",
+    "production notes on canvas",
+    "logo redrawing",
+    "reusing immutable public URLs",
+    "unapproved CSV generation before visual preflight"
+  ]
+}
