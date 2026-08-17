@@ -5,6 +5,13 @@
   "goal": "Drive traffic to the Philippines Arrival Kit landing page and free arrival checklist",
   "destinationUrl": "https://travel.stampdup.com/philippines-arrival-kit",
   "campaignId": "philippines_arrival_kit",
+  "publicImageCampaignSlug": "philippines",
+  "pinterestBulkSchedule": {
+    "startDate": "2026-08-18",
+    "timezone": "America/Chicago",
+    "dailyTimes": ["08:00", "11:00", "14:00", "17:00", "20:00"],
+    "pinsPerDay": 5
+  },
   "experiment": {
     "id": "philippines_arrival_kit_4_week_2026_08",
     "startDate": "2026-08-17",

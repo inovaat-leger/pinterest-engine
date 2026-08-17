@@ -11,6 +11,13 @@ export type ExperimentConfig = {
   utmCampaign: string;
 };
 
+export type PinterestBulkScheduleConfig = {
+  startDate: string;
+  timezone: string;
+  dailyTimes: string[];
+  pinsPerDay: number;
+};
+
 export type CampaignConfig = {
   name: string;
   brand: string;
@@ -23,6 +30,8 @@ export type CampaignConfig = {
   callToAction?: string;
   campaignId?: string;
   experiment?: ExperimentConfig;
+  publicImageCampaignSlug?: string;
+  pinterestBulkSchedule?: PinterestBulkScheduleConfig;
 };
 
 export type SourcePin = {
@@ -181,6 +190,8 @@ export function buildExperimentPins(config: CampaignConfig, sourcePins: SourcePi
   requireDate(experiment.startDate, "experiment start date");
   if (!/^\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})$/.test(experiment.publicationTime)) throw new Error(`Invalid publication time: ${experiment.publicationTime}.`);
   requireHttpUrl(config.destinationUrl, "campaign destination URL");
+  const imageCampaignSlug = config.publicImageCampaignSlug ?? (config.campaignId === "philippines_arrival_kit" ? "philippines" : config.campaignId ?? "campaign");
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(imageCampaignSlug)) throw new Error(`Invalid public image campaign slug: ${imageCampaignSlug}.`);
 
   const isPhilippinesSprint = campaignId === "philippines_arrival_kit" && sourcePins.length === 25;
   const assignments: Assignment[] = isPhilippinesSprint ? philippinesAssignments : sourcePins.map((pin) => ({
@@ -227,7 +238,7 @@ export function buildExperimentPins(config: CampaignConfig, sourcePins: SourcePi
       topicTags: [...new Set([assignment.primarySearchPhrase, ...source.keywords])],
       altText: `${title}. ${onImageText}. StampdUp Travel Philippines arrival planning graphic.`,
       imageFilename: filename,
-      imagePublicUrl: "",
+      imagePublicUrl: `https://travel.stampdup.com/pins/${imageCampaignSlug}/${filename}`,
       baseDestinationUrl: config.destinationUrl,
       trackedDestinationUrl: trackedDestinationUrl(config.destinationUrl, number, experiment.utmCampaign),
       plannedPublicationAt,

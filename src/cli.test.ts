@@ -17,6 +17,7 @@ test("generate preserves existing outputs and adds complete experiment exports",
     "campaign.json", "pins.csv", "image-prompts.csv", "manual-posting.csv",
     "canva-bulk-create.csv", "pin-image-production.json", "experiment-schedule.csv",
     "performance-entry.csv", "experiment-manifest.json",
+    "pinterest-bulk-upload.csv",
   ];
   await Promise.all(expectedFiles.map((filename) => readFile(path.join(output, filename), "utf8")));
 
@@ -24,6 +25,7 @@ test("generate preserves existing outputs and adds complete experiment exports",
   const manual = csvRecords(await readFile(path.join(output, "manual-posting.csv"), "utf8"));
   const schedule = csvRecords(await readFile(path.join(output, "experiment-schedule.csv"), "utf8"));
   const performance = csvRecords(await readFile(path.join(output, "performance-entry.csv"), "utf8"));
+  const pinterestBulk = csvRecords(await readFile(path.join(output, "pinterest-bulk-upload.csv"), "utf8"));
   const manifest = JSON.parse(await readFile(path.join(output, "experiment-manifest.json"), "utf8"));
 
   assert.equal(pins.length, 25);
@@ -31,6 +33,9 @@ test("generate preserves existing outputs and adds complete experiment exports",
   assert.equal(schedule.filter((row) => row.reserve === "no").length, 20);
   assert.equal(schedule.filter((row) => row.reserve === "yes").length, 5);
   assert.equal(performance.length, 60);
+  assert.equal(pinterestBulk.length, 19);
+  assert.deepEqual(Object.keys(pinterestBulk[0]), ["Title", "Media URL", "Pinterest board", "Thumbnail", "Description", "Link", "Publish date", "Keywords"]);
+  assert.equal(pinterestBulk[0]["Media URL"], "https://travel.stampdup.com/pins/philippines/manila-airport-to-your-hotel-know-your-options.png");
   assert.equal(manifest.experiment.activePinCount, 20);
   assert.equal(manifest.experiment.reservePinCount, 5);
   assert.equal(pins[0].tracked_destination_url, "https://travel.stampdup.com/philippines-arrival-kit");

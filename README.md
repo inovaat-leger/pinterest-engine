@@ -21,7 +21,7 @@ Edit `campaign.json`, then generate the campaign:
 npm run campaign:generate
 ```
 
-The CLI writes nine files:
+The CLI writes ten files:
 
 - `output/campaign.json` — complete campaign data
 - `output/pins.csv` — pin copy and creative briefs
@@ -32,6 +32,7 @@ The CLI writes nine files:
 - `output/experiment-schedule.csv` — the four-week testing matrix and five reserve concepts
 - `output/performance-entry.csv` — provider-neutral 7-, 30-, and 90-day metric-entry template
 - `output/experiment-manifest.json` — complete machine-readable Pin, experiment, tracking, publication, and review metadata
+- `output/pinterest-bulk-upload.csv` — Pinterest Import content CSV with public image URLs and UTC schedule timestamps
 
 Regenerate the same automation-ready exports explicitly with:
 
@@ -40,6 +41,8 @@ npm run campaign:export
 ```
 
 The Philippines campaign produces a deliberate 20-Pin sprint—five Pins per week for four weeks—with five concepts held in reserve. Pin #1 is the existing untagged baseline. Pins #2 onward receive stable, unique Pinterest organic UTM URLs. See the [experiment operating guide](docs/PINTEREST_EXPERIMENT_OPERATIONS.md) for the schedule, Pin/experiment IDs, reserve policy, publication workflow, event mapping, performance imports, report commands, and interpretation limits.
+
+Public Pin images use allowlisted Google Drive mappings at `/pins/{campaign}/{filename}`. The Pinterest-native export schedules five planned Pins per day by default and can be configured by campaign settings or CLI flags. See [public Pin images and Pinterest bulk upload](docs/PIN_IMAGE_AND_BULK_UPLOAD.md) for the manifest schema, verification commands, timezone conversion, and manual Import content workflow.
 
 Import completed performance rows and produce reports with:
 
@@ -74,6 +77,8 @@ The same repository includes the dependency-light StampdUp Travel website served
 - `/philippines-arrival-checklist` — interactive, printable checklist with no signup
 - `/philippines-arrival-checklist.txt` — downloadable plain-text checklist
 - `/health` — JSON health check used by Railway
+- `/pins/{campaign}/{filename}` — raw allowlisted Pin image bytes with immutable caching
+- `/health/pins/{campaign}/{filename}` — privacy-safe public image diagnostic
 
 Build and run the website locally:
 

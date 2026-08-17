@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createDefaultPinImageService, PinImageService, PinImageUpstreamError } from "./pin-image-proxy.js";
 
 const productionOrigin = "https://travel.stampdup.com";
 const brandName = "StampdUp Travel";
@@ -404,7 +405,48 @@ async function serveAsset(pathname: string, response: ServerResponse): Promise<b
   return true;
 }
 
-async function handleRequest(request: IncomingMessage, response: ServerResponse): Promise<void> {
+function pinImagePath(pathname: string, diagnostic = false): { campaign: string; filename: string } | undefined {
+  const prefix = diagnostic ? "/health/pins/" : "/pins/";
+  if (!pathname.startsWith(prefix)) return undefined;
+  const parts = pathname.slice(prefix.length).split("/");
+  if (parts.length !== 2 || parts.some((part) => !part)) return undefined;
+  try {
+    return { campaign: decodeURIComponent(parts[0]), filename: decodeURIComponent(parts[1]) };
+  } catch {
+    return undefined;
+  }
+}
+
+async function servePinImage(request: IncomingMessage, response: ServerResponse, pinImages: PinImageService, campaign: string, filename: string, diagnostic: boolean): Promise<void> {
+  if (!pinImages.has(campaign, filename)) {
+    send(response, 404, "application/json; charset=utf-8", JSON.stringify({ error: "Not found" }), { "Cache-Control": "no-store" });
+    return;
+  }
+  try {
+    const image = await pinImages.get(campaign, filename);
+    if (!image) {
+      send(response, 404, "application/json; charset=utf-8", JSON.stringify({ error: "Not found" }), { "Cache-Control": "no-store" });
+      return;
+    }
+    if (diagnostic) {
+      send(response, 200, "application/json; charset=utf-8", JSON.stringify({ status: "ok", campaign, filename, contentType: image.contentType, bytes: image.bytes.length }), { "Cache-Control": "no-store" });
+      return;
+    }
+    const cacheHeaders = { "Cache-Control": "public, max-age=31536000, immutable", ETag: image.etag };
+    if (request.headers["if-none-match"] === image.etag) {
+      response.writeHead(304, { ...cacheHeaders, "X-Content-Type-Options": "nosniff" });
+      response.end();
+      return;
+    }
+    response.writeHead(200, { "Content-Type": image.contentType, "Content-Length": String(image.bytes.length), "X-Content-Type-Options": "nosniff", ...cacheHeaders });
+    response.end(request.method === "HEAD" ? undefined : image.bytes);
+  } catch (error) {
+    if (!(error instanceof PinImageUpstreamError)) console.error("Unexpected Pin image route failure.");
+    send(response, 502, "application/json; charset=utf-8", JSON.stringify({ error: "Pin image unavailable" }), { "Cache-Control": "no-store" });
+  }
+}
+
+async function handleRequest(request: IncomingMessage, response: ServerResponse, pinImagesPromise: Promise<PinImageService>): Promise<void> {
   const url = new URL(request.url ?? "/", productionOrigin);
   if (request.method === "POST" && url.pathname === "/events/print") {
     logEvent("arrival_checklist_print", url);
@@ -418,6 +460,16 @@ async function handleRequest(request: IncomingMessage, response: ServerResponse)
   }
 
   if (await serveAsset(url.pathname, response)) return;
+  const imagePath = pinImagePath(url.pathname);
+  if (imagePath) {
+    await servePinImage(request, response, await pinImagesPromise, imagePath.campaign, imagePath.filename, false);
+    return;
+  }
+  const diagnosticPath = pinImagePath(url.pathname, true);
+  if (diagnosticPath) {
+    await servePinImage(request, response, await pinImagesPromise, diagnosticPath.campaign, diagnosticPath.filename, true);
+    return;
+  }
   if (url.pathname === "/health") {
     send(response, 200, "application/json; charset=utf-8", JSON.stringify({ status: "ok" }), { "Cache-Control": "no-store" });
     return;
@@ -454,9 +506,10 @@ async function handleRequest(request: IncomingMessage, response: ServerResponse)
   send(response, 404, "application/json; charset=utf-8", JSON.stringify({ error: "Not found" }));
 }
 
-export function createStampdUpServer(): Server {
+export function createStampdUpServer(options: { pinImages?: PinImageService | Promise<PinImageService> } = {}): Server {
+  const pinImagesPromise = Promise.resolve(options.pinImages ?? createDefaultPinImageService());
   return createServer((request, response) => {
-    handleRequest(request, response).catch((error: unknown) => {
+    handleRequest(request, response, pinImagesPromise).catch((error: unknown) => {
       console.error(error instanceof Error ? error.message : error);
       if (!response.headersSent) send(response, 500, "application/json; charset=utf-8", JSON.stringify({ error: "Internal server error" }));
       else response.end();

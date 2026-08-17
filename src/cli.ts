@@ -5,6 +5,7 @@ import path from "node:path";
 import { rowsToCsv } from "./csv.js";
 import { buildExperimentPins, experimentConfig, extractOverlayText, pinFilename, type CampaignConfig, type ExperimentPin, type SourcePin } from "./experiment.js";
 import { buildCampaignReport, campaignReportMarkdown, emptyPerformanceStore, mergePerformanceSnapshots, parsePerformanceImport, validatePerformanceStore, type PerformanceStore, type ReviewWindow } from "./performance.js";
+import { toPinterestBulkCsv, type PinterestBulkSchedule } from "./pinterest-bulk.js";
 
 type Pin = SourcePin;
 
@@ -39,6 +40,16 @@ function validate(input: unknown): CampaignConfig {
   }
   if (value.campaignId !== undefined && (typeof value.campaignId !== "string" || !/^[a-z0-9_]+$/.test(value.campaignId))) {
     throw new Error('Config field "campaignId" must use lowercase letters, numbers, and underscores.');
+  }
+  if (value.publicImageCampaignSlug !== undefined && (typeof value.publicImageCampaignSlug !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value.publicImageCampaignSlug))) {
+    throw new Error('Config field "publicImageCampaignSlug" must be a lowercase URL slug.');
+  }
+  if (value.pinterestBulkSchedule !== undefined) {
+    if (!value.pinterestBulkSchedule || typeof value.pinterestBulkSchedule !== "object") throw new Error('Config field "pinterestBulkSchedule" must be an object.');
+    const schedule = value.pinterestBulkSchedule as Record<string, unknown>;
+    if (typeof schedule.startDate !== "string" || typeof schedule.timezone !== "string") throw new Error("Pinterest bulk startDate and timezone must be strings.");
+    if (!Array.isArray(schedule.dailyTimes) || schedule.dailyTimes.length === 0 || !schedule.dailyTimes.every((time) => typeof time === "string")) throw new Error("Pinterest bulk dailyTimes must be a non-empty string array.");
+    if (!Number.isInteger(schedule.pinsPerDay)) throw new Error("Pinterest bulk pinsPerDay must be an integer.");
   }
   if (value.experiment !== undefined) {
     if (!value.experiment || typeof value.experiment !== "object") throw new Error('Config field "experiment" must be an object.');
@@ -407,9 +418,23 @@ function experimentManifest(config: CampaignConfig, pins: ExperimentPin[]): obje
   };
 }
 
-type GenerateOptions = { config: string; output: string };
+type GenerateOptions = { config: string; output: string; bulkStartDate?: string; bulkTimezone?: string; bulkTimes?: string; bulkPinsPerDay?: string };
 
-async function writeCampaignOutputs({ config: configFile, output }: GenerateOptions, action: "Generated" | "Exported"): Promise<void> {
+function bulkScheduleOverrides(options: GenerateOptions): Partial<PinterestBulkSchedule> {
+  const overrides: Partial<PinterestBulkSchedule> = {};
+  if (options.bulkStartDate) overrides.startDate = options.bulkStartDate;
+  if (options.bulkTimezone) overrides.timezone = options.bulkTimezone;
+  if (options.bulkTimes) overrides.dailyTimes = options.bulkTimes.split(",").map((value) => value.trim()).filter(Boolean);
+  if (options.bulkPinsPerDay) {
+    const value = Number(options.bulkPinsPerDay);
+    if (!Number.isInteger(value)) throw new Error("--bulk-pins-per-day must be an integer.");
+    overrides.pinsPerDay = value;
+  }
+  return overrides;
+}
+
+async function writeCampaignOutputs(options: GenerateOptions, action: "Generated" | "Exported"): Promise<void> {
+  const { config: configFile, output } = options;
   const config = validate(JSON.parse(await readFile(path.resolve(configFile), "utf8")));
   const sourcePins = generatePins(config);
   const pins = buildExperimentPins(config, sourcePins);
@@ -425,6 +450,7 @@ async function writeCampaignOutputs({ config: configFile, output }: GenerateOpti
     writeFile(path.join(outputDir, "experiment-schedule.csv"), toExperimentScheduleCsv(pins)),
     writeFile(path.join(outputDir, "performance-entry.csv"), toPerformanceEntryCsv(pins)),
     writeFile(path.join(outputDir, "experiment-manifest.json"), JSON.stringify(experimentManifest(config, pins), null, 2) + "\n"),
+    writeFile(path.join(outputDir, "pinterest-bulk-upload.csv"), toPinterestBulkCsv(pins, config, bulkScheduleOverrides(options))),
   ]);
   console.log(`${action} ${pins.length} pins and automation exports in ${outputDir}`);
 }
@@ -488,12 +514,20 @@ program.command("generate")
   .description("Generate campaign assets and automation-ready CSV exports")
   .option("-c, --config <file>", "campaign config", "campaign.json")
   .option("-o, --output <directory>", "output directory", "output")
+  .option("--bulk-start-date <date>", "Pinterest bulk schedule start date (YYYY-MM-DD)")
+  .option("--bulk-timezone <timezone>", "Pinterest bulk IANA timezone")
+  .option("--bulk-times <times>", "Pinterest bulk local times, comma-separated HH:mm values")
+  .option("--bulk-pins-per-day <count>", "Pinterest bulk Pins per day")
   .action((options: GenerateOptions) => writeCampaignOutputs(options, "Generated"));
 
 program.command("export")
   .description("Export campaign assets for image creation and manual posting")
   .option("-c, --config <file>", "campaign config", "campaign.json")
   .option("-o, --output <directory>", "output directory", "output")
+  .option("--bulk-start-date <date>", "Pinterest bulk schedule start date (YYYY-MM-DD)")
+  .option("--bulk-timezone <timezone>", "Pinterest bulk IANA timezone")
+  .option("--bulk-times <times>", "Pinterest bulk local times, comma-separated HH:mm values")
+  .option("--bulk-pins-per-day <count>", "Pinterest bulk Pins per day")
   .action((options: GenerateOptions) => writeCampaignOutputs(options, "Exported"));
 
 program.command("performance-import")
