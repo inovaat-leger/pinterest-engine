@@ -8,6 +8,15 @@ import { canonicalPinIdentities, validatePinImageHistory, validatePinImageManife
 import type { PinterestBulkRow } from "./pinterest-bulk.js";
 
 function escapeXml(value: string): string { return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;"); }
+function wrap(value: string, width: number): string[] {
+  const lines: string[] = []; let line = "";
+  for (const word of value.split(" ")) {
+    if (line && `${line} ${word}`.length > width) { lines.push(line); line = word; }
+    else line = line ? `${line} ${word}` : word;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
 
 async function main(): Promise<void> {
   const outputDir = path.resolve("output");
@@ -19,13 +28,17 @@ async function main(): Promise<void> {
   const results = await verifyProductionPinImages(identities, rows, historicalUrls);
   await writeFile(path.join(outputDir, "stampdup-philippines-v2-preflight.md"), productionVerificationMarkdown(results));
 
-  const cardWidth = 340, cardHeight = 510, columns = 4, gap = 20, margin = 30;
+  const cardWidth = 340, cardHeight = 540, columns = 4, gap = 20, margin = 30;
   const cards: Buffer[] = [];
   for (const result of results) {
     const image = await sharp(result.productionBytes).resize(260, 390, { fit: "contain", background: "#fffaf0" }).png().toBuffer();
     const filename = new URL(result.mediaUrl).pathname.split("/").pop()!;
-    const label = Buffer.from(`<svg width="${cardWidth}" height="${cardHeight}"><rect width="100%" height="100%" rx="12" fill="#fffaf0" stroke="#d7b24a" stroke-width="2"/><text x="18" y="420" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#173f35">${escapeXml(result.pinId)} · ${escapeXml(result.canonicalTitle.slice(0, 28))}</text><text x="18" y="448" font-family="Arial,sans-serif" font-size="14" fill="#173f35">${escapeXml(result.canonicalTitle.slice(28, 68))}</text><text x="18" y="480" font-family="Arial,sans-serif" font-size="12" fill="#5b675f">${escapeXml(filename)}</text></svg>`);
-    cards.push(await sharp({ create: { width: cardWidth, height: cardHeight, channels: 4, background: "#fffaf0" } }).composite([{ input: image, left: 40, top: 15 }, { input: label, left: 0, top: 0 }]).png().toBuffer());
+    const titleLines = wrap(`${result.pinId} · ${result.canonicalTitle}`, 38).slice(0, 3);
+    const filenameLines = wrap(filename.replaceAll("-", "- "), 46).map((line) => line.replaceAll("- ", "-")).slice(0, 2);
+    const titleText = titleLines.map((line, index) => `<tspan x="18" y="${418 + index * 20}">${escapeXml(line)}</tspan>`).join("");
+    const filenameText = filenameLines.map((line, index) => `<tspan x="18" y="${490 + index * 16}">${escapeXml(line)}</tspan>`).join("");
+    const label = Buffer.from(`<svg width="${cardWidth}" height="${cardHeight}"><rect width="100%" height="100%" rx="12" fill="#fffaf0" stroke="#d7b24a" stroke-width="2"/><text font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#173f35">${titleText}</text><text font-family="Arial,sans-serif" font-size="10" fill="#5b675f">${filenameText}</text></svg>`);
+    cards.push(await sharp({ create: { width: cardWidth, height: cardHeight, channels: 4, background: "#fffaf0" } }).composite([{ input: label, left: 0, top: 0 }, { input: image, left: 40, top: 15 }]).png().toBuffer());
   }
   const rowsCount = Math.ceil(cards.length / columns);
   const sheetWidth = margin * 2 + columns * cardWidth + (columns - 1) * gap;
