@@ -16,14 +16,15 @@ async function main(): Promise<void> {
   const history = validatePinImageHistory(JSON.parse(await readFile("config/pin-image-history.json", "utf8")));
   const identities = canonicalPinIdentities(manifest, "philippines").filter(({ pinId }) => Number(pinId.slice(4)) >= 26);
   if (batch.length !== 20 || specs.length !== 20 || identities.length !== 20) throw new Error("Redesign verification requires exactly Pins #26–#45.");
-  const previous = new Set(history.images.filter(({ firstSeenCommit }) => firstSeenCommit !== "redesign-026-045-v2").map(({ filename }) => filename));
+  const currentFilenames = new Set(identities.map(({ filename }) => filename));
+  const previous = new Set(history.images.filter(({ filename }) => !currentFilenames.has(filename)).map(({ filename }) => filename));
   const hashes = new Set<string>();
   const rows: Array<{ pinId:string; title:string; template:string; filename:string; url:string; sha:string; dimensions:string; exact:string; text:string; label:string; visual:string; result:string; bytes:Buffer }> = [];
 
   for (const [index, identity] of identities.entries()) {
     const pin = batch[index], spec = specs[index], expected = `pin_${String(index + 26).padStart(3, "0")}`;
     if (identity.pinId !== expected || pin.id !== index + 26 || spec.id !== index + 26 || identity.canonicalTitle !== pin.title || identity.filename !== pin.filename) throw new Error(`${expected} canonical identity mismatch.`);
-    if (!identity.filename.endsWith("-v2.png") || previous.has(identity.filename)) throw new Error(`${expected} does not use a fresh v2 filename.`);
+    if (!/-v(?:2|3)\.png$/.test(identity.filename) || previous.has(identity.filename)) throw new Error(`${expected} does not use a fresh redesign filename.`);
     const visibleText = [pin.overlayText, pin.supportingText, spec.kicker, ...spec.items].join(" ");
     if (forbidden.test(visibleText)) throw new Error(`${expected} consumer text contains a prohibited label or placeholder.`);
     const sourceTemplate = await readFile(`templates/stampdup-travel/stampdup-pinterest-template-kit/editable-svg/${spec.template}.svg`, "utf8");

@@ -27,7 +27,7 @@ test("Pins #26–#45 have one immutable canonical identity and approved finished
     assert.equal(identity.canonicalTitle, pin.title);
     assert.equal(identity.filename, pin.filename);
     assert.equal(identity.altText, pin.altText);
-    assert.match(identity.filename, new RegExp(`^pin-${String(index + 26).padStart(3, "0")}-[a-z0-9-]+-v2\\.png$`));
+    assert.match(identity.filename, new RegExp(`^pin-${String(index + 26).padStart(3, "0")}-[a-z0-9-]+-v(?:2|3)\\.png$`));
     assert.ok(identity.localPath);
     const bytes = readFileSync(identity.localPath!);
     const metadata = await sharp(bytes).metadata();
@@ -38,7 +38,7 @@ test("Pins #26–#45 have one immutable canonical identity and approved finished
     const lock = history.images.find(({ campaign, filename }) => campaign === "philippines" && filename === identity.filename);
     assert.equal(lock?.sha256, identity.sha256);
     assert.equal(lock?.localPath, identity.localPath);
-    const retiredV1 = history.images.find(({ campaign, filename }) => campaign === "philippines" && filename === identity.filename.replace("-v2.png", "-v1.png"));
+    const retiredV1 = history.images.find(({ campaign, filename }) => campaign === "philippines" && filename === identity.filename.replace(/-v[23]\.png$/, "-v1.png"));
     assert.ok(retiredV1, `${expectedId} retired v1 route must remain immutable and available.`);
   }
 

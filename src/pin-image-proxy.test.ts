@@ -62,5 +62,5 @@ test("approved Philippines Pin IDs retain their exact registry artwork and canon
     assert.equal(identity.sourceFilename, source);
   }
   assert.deepEqual(identities.slice(24).map((identity) => identity.pinId), Array.from({ length: 20 }, (_, index) => `pin_${String(index + 26).padStart(3, "0")}`));
-  assert.ok(identities.slice(24).every((identity) => identity.filename.startsWith(`pin-${identity.pinId.slice(4)}-`) && identity.filename.endsWith("-v2.png") && identity.localPath?.endsWith(identity.filename)));
+  assert.ok(identities.slice(24).every((identity) => identity.filename.startsWith(`pin-${identity.pinId.slice(4)}-`) && /-v(?:2|3)\.png$/.test(identity.filename) && identity.localPath?.endsWith(identity.filename)));
 });

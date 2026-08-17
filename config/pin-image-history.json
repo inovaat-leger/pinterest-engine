@@ -644,6 +644,13 @@
       "localPath": "public/pins/philippines/pin-045-philippines-first-night-bag-v2.png",
       "sha256": "4b40807b027aba80ac31893103c07e9b29521c86ea0fa42cb8e0029489deb988",
       "firstSeenCommit": "redesign-026-045-v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-029-screenshot-booking-details-v3.png",
+      "localPath": "public/pins/philippines/pin-029-screenshot-booking-details-v3.png",
+      "sha256": "61ce0d5568198ff9b969024ddd18cab4eaa5de946ab64547d027e16f5e7462d7",
+      "firstSeenCommit": "redesign-pin-029-v3"
     }
   ]
 }

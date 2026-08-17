@@ -303,11 +303,11 @@
       "sourceConceptId": 29,
       "canonicalTitle": "Screenshot These 4 Booking Details Before You Fly",
       "campaign": "philippines",
-      "filename": "pin-029-screenshot-booking-details-v2.png",
-      "sourceFilename": "pin-029-screenshot-booking-details-v2.png",
-      "localPath": "public/pins/philippines/pin-029-screenshot-booking-details-v2.png",
+      "filename": "pin-029-screenshot-booking-details-v3.png",
+      "sourceFilename": "pin-029-screenshot-booking-details-v3.png",
+      "localPath": "public/pins/philippines/pin-029-screenshot-booking-details-v3.png",
       "altText": "Phone beside hotel key card, map pin, and booking cards beneath the words Screenshot Before You Fly.",
-      "sha256": "4863b6d7bc96750d83385c47af8d2fbbc07af5c0aa006f5594b178942a71b6a4"
+      "sha256": "61ce0d5568198ff9b969024ddd18cab4eaa5de946ab64547d027e16f5e7462d7"
     },
     {
       "pinId": "pin_030",

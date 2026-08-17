@@ -48,8 +48,7 @@ export function validateCanonicalBulkIdentity(
     if (pin.title !== identity.canonicalTitle || row.Title !== identity.canonicalTitle) throw new Error(`${pinId} generated title does not match its canonical title.`);
     if (pin.imageFilename !== identity.filename) throw new Error(`${pinId} generated filename does not match its canonical artwork.`);
     const expectedMedia = `https://travel.stampdup.com/pins/${identity.campaign}/${identity.filename}`;
-    const requiredVersion = "-v2.png";
-    if (!identity.filename.endsWith(requiredVersion)) throw new Error(`${pinId} must use its new versioned ${requiredVersion} Media URL.`);
+    if (!/-v[2-9][0-9]*\.png$/.test(identity.filename)) throw new Error(`${pinId} must use a new immutable v2-or-later Media URL.`);
     if (pin.imagePublicUrl !== expectedMedia || row["Media URL"] !== expectedMedia) throw new Error(`${pinId} public Media URL does not match its canonical manifest entry.`);
     const content = new URL(row.Link).searchParams.get("utm_content") ?? "";
     if (content !== pinId || new URL(pin.trackedDestinationUrl).searchParams.get("utm_content") !== pinId) throw new Error(`${pinId} UTM content ID disagrees with its canonical Pin ID.`);
