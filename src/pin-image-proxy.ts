@@ -2,12 +2,11 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { pinFilename, type CanonicalPinIdentity } from "./experiment.js";
 
-export type PinImageManifestEntry = {
-  pinId?: string;
+export type PinImageManifestEntry = Partial<Pick<CanonicalPinIdentity, "pinId" | "sourceConceptId" | "canonicalTitle" | "sourceFilename" | "altText">> & {
   campaign: string;
   filename: string;
-  sourceFilename?: string;
   driveFileId?: string;
   sourceUrl?: string;
 };
@@ -96,9 +95,38 @@ export function validatePinImageManifest(input: unknown): PinImageManifest {
       seenPinIds.add(entry.pinId);
     }
     if (entry.sourceFilename !== undefined && (!entry.sourceFilename.trim() || /[\\/]/.test(entry.sourceFilename))) throw new Error(`Invalid source filename for ${key}.`);
+    if (entry.sourceConceptId !== undefined && (!Number.isInteger(entry.sourceConceptId) || entry.sourceConceptId < 1)) throw new Error(`Invalid source concept ID for ${key}.`);
+    if (entry.canonicalTitle !== undefined && (!entry.canonicalTitle.trim() || entry.canonicalTitle.length > 100)) throw new Error(`Invalid canonical title for ${key}.`);
+    if (entry.altText !== undefined && (!entry.altText.trim() || entry.altText.length > 500)) throw new Error(`Invalid ALT text for ${key}.`);
     sourceFor(entry);
   }
   return manifest as PinImageManifest;
+}
+
+export function canonicalPinIdentities(manifest: PinImageManifest, campaign: string): CanonicalPinIdentity[] {
+  const entries = manifest.images.filter((entry) => entry.campaign === campaign);
+  const identities = entries.map((entry) => {
+    if (!entry.pinId || !entry.sourceConceptId || !entry.canonicalTitle || !entry.sourceFilename || !entry.driveFileId || !entry.altText) {
+      throw new Error(`Canonical Pin identity is incomplete for ${entry.pinId ?? `${campaign}/${entry.filename}`}.`);
+    }
+    return {
+      pinId: entry.pinId,
+      sourceConceptId: entry.sourceConceptId,
+      canonicalTitle: entry.canonicalTitle,
+      campaign: entry.campaign,
+      filename: entry.filename,
+      sourceFilename: entry.sourceFilename,
+      driveFileId: entry.driveFileId,
+      altText: entry.altText,
+    };
+  }).sort((a, b) => a.pinId.localeCompare(b.pinId));
+  const expected = Array.from({ length: 24 }, (_, index) => `pin_${String(index + 2).padStart(3, "0")}`);
+  if (identities.length > 0 && identities.map((identity) => identity.pinId).join(",") !== expected.join(",")) throw new Error("The Philippines canonical Pin catalog must contain each Pin ID from pin_002 through pin_025 exactly once.");
+  for (const identity of identities) {
+    const expectedFilename = pinFilename({ id: Number(identity.pinId.slice(4)), title: identity.canonicalTitle });
+    if (identity.filename !== expectedFilename) throw new Error(`${identity.pinId} public filename must be the deterministic filename for its canonical title: ${expectedFilename}.`);
+  }
+  return identities;
 }
 
 export async function loadPinImageManifest(manifestPath = process.env.PIN_IMAGE_MANIFEST_PATH?.trim() || defaultManifestPath): Promise<PinImageManifest> {

@@ -33,6 +33,18 @@ export type CampaignConfig = {
   experiment?: ExperimentConfig;
   publicImageCampaignSlug?: string;
   pinterestBulkSchedule?: PinterestBulkScheduleConfig;
+  pinImageManifest?: string;
+};
+
+export type CanonicalPinIdentity = {
+  pinId: string;
+  sourceConceptId: number;
+  canonicalTitle: string;
+  campaign: string;
+  filename: string;
+  sourceFilename: string;
+  driveFileId: string;
+  altText: string;
 };
 
 export type SourcePin = {
@@ -108,9 +120,9 @@ const philippinesAssignments: Assignment[] = [
   { sourceConceptId: 23, topicPillar: "offline_preparation", primarySearchPhrase: "offline maps Philippines", travelerIntent: "prepare_offline", creativeFormat: "step_by_step_infographic" },
   { sourceConceptId: 8, topicPillar: "phone_esim", primarySearchPhrase: "Philippines mobile data needs", travelerIntent: "setup_connectivity", creativeFormat: "comparison_decision", notes: "Reserve concept." },
   { sourceConceptId: 21, topicPillar: "airport_logistics", primarySearchPhrase: "Manila airport Wi-Fi", travelerIntent: "navigate_arrival", creativeFormat: "mistakes_to_avoid", notes: "Reserve concept." },
-  { sourceConceptId: 22, topicPillar: "offline_preparation", primarySearchPhrase: "Philippines arrival apps", travelerIntent: "prepare_offline", creativeFormat: "saveable_checklist", notes: "Reserve concept." },
-  { sourceConceptId: 24, topicPillar: "phone_esim", primarySearchPhrase: "Philippines eSIM preflight checks", travelerIntent: "setup_connectivity", creativeFormat: "saveable_checklist", notes: "Reserve concept." },
-  { sourceConceptId: 25, topicPillar: "airport_logistics", primarySearchPhrase: "Philippines preflight arrival check", travelerIntent: "navigate_arrival", creativeFormat: "travel_photo_led", notes: "Reserve concept." },
+  { sourceConceptId: 22, topicPillar: "offline_preparation", primarySearchPhrase: "Philippines plug and charging prep", travelerIntent: "prepare_offline", creativeFormat: "saveable_checklist", notes: "Reserve concept." },
+  { sourceConceptId: 24, topicPillar: "offline_preparation", primarySearchPhrase: "Philippines emergency contacts", travelerIntent: "prepare_offline", creativeFormat: "saveable_checklist", notes: "Reserve concept." },
+  { sourceConceptId: 25, topicPillar: "airport_logistics", primarySearchPhrase: "Manila airport pickup checks", travelerIntent: "navigate_arrival", creativeFormat: "step_by_step_infographic", notes: "Reserve concept." },
 ];
 
 export function extractOverlayText(pin: SourcePin): string {
@@ -185,7 +197,7 @@ function defaultExperiment(config: CampaignConfig): Required<ExperimentConfig> {
   };
 }
 
-export function buildExperimentPins(config: CampaignConfig, sourcePins: SourcePin[]): ExperimentPin[] {
+export function buildExperimentPins(config: CampaignConfig, sourcePins: SourcePin[], canonicalIdentities?: CanonicalPinIdentity[]): ExperimentPin[] {
   const campaignId = config.campaignId ?? "philippines_arrival_kit";
   const experiment = defaultExperiment(config);
   requireDate(experiment.startDate, "experiment start date");
@@ -195,7 +207,15 @@ export function buildExperimentPins(config: CampaignConfig, sourcePins: SourcePi
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(imageCampaignSlug)) throw new Error(`Invalid public image campaign slug: ${imageCampaignSlug}.`);
 
   const isPhilippinesSprint = campaignId === "philippines_arrival_kit" && sourcePins.length === 25;
-  const assignments: Assignment[] = isPhilippinesSprint ? philippinesAssignments : sourcePins.map((pin) => ({
+  const canonicalByPinId = new Map((canonicalIdentities ?? []).map((identity) => [identity.pinId, identity]));
+  if (isPhilippinesSprint && canonicalIdentities && canonicalIdentities.length !== 24) throw new Error(`The Philippines canonical catalog must contain Pins #2–#25; received ${canonicalIdentities.length} entries.`);
+  const assignments: Assignment[] = isPhilippinesSprint && canonicalIdentities
+    ? [philippinesAssignments[0], ...canonicalIdentities.map((identity) => {
+      const metadata = philippinesAssignments.find((assignment) => assignment.sourceConceptId === identity.sourceConceptId);
+      if (!metadata) throw new Error(`${identity.pinId} references source concept ${identity.sourceConceptId}, which has no experiment metadata.`);
+      return { ...metadata, sourceConceptId: identity.sourceConceptId };
+    })]
+    : isPhilippinesSprint ? philippinesAssignments : sourcePins.map((pin) => ({
     sourceConceptId: pin.id,
     topicPillar: "offline_preparation" as TopicPillar,
     primarySearchPhrase: pin.keywords[0] ?? pin.title,
@@ -206,6 +226,7 @@ export function buildExperimentPins(config: CampaignConfig, sourcePins: SourcePi
 
   const pins = assignments.map((assignment, index) => {
     const number = index + 1;
+    const identity = canonicalByPinId.get(pinId(number));
     const source = bySourceId.get(assignment.sourceConceptId);
     if (!source) throw new Error(`Experiment assignment ${number} references unknown source concept ${assignment.sourceConceptId}.`);
     const scheduled = isPhilippinesSprint && number <= 20;
@@ -213,10 +234,10 @@ export function buildExperimentPins(config: CampaignConfig, sourcePins: SourcePi
     const slot = scheduled ? (index % 5) + 1 : null;
     const plannedDate = scheduled ? addDays(experiment.startDate, ((week ?? 1) - 1) * 7 + ((slot ?? 1) - 1)) : "";
     const plannedPublicationAt = plannedDate ? `${plannedDate}T${experiment.publicationTime}` : "";
-    const title = number === 1 && isPhilippinesSprint ? "Philippines eSIM Setup in 5 Minutes" : source.title;
+    const title = number === 1 && isPhilippinesSprint ? "Philippines eSIM Setup in 5 Minutes" : identity?.canonicalTitle ?? source.title;
     const normalizedSource = { ...source, id: number, title };
     const onImageText = number === 1 && isPhilippinesSprint ? "PHILIPPINES eSIM SETUP IN 5 MINUTES" : extractOverlayText(normalizedSource);
-    const filename = pinFilename(normalizedSource);
+    const filename = identity?.filename ?? pinFilename(normalizedSource);
     const secondaryKeywords = source.keywords.filter((keyword) => keyword.toLowerCase() !== assignment.primarySearchPhrase.toLowerCase());
     return {
       ...normalizedSource,
@@ -237,7 +258,7 @@ export function buildExperimentPins(config: CampaignConfig, sourcePins: SourcePi
       onImageText,
       callToAction: config.callToAction ?? "Learn more",
       topicTags: [...new Set([assignment.primarySearchPhrase, ...source.keywords])],
-      altText: `${title}. ${onImageText}. StampdUp Travel Philippines arrival planning graphic.`,
+      altText: identity?.altText ?? `${title}. ${onImageText}. StampdUp Travel Philippines arrival planning graphic.`,
       imageFilename: filename,
       imagePublicUrl: `https://travel.stampdup.com/pins/${imageCampaignSlug}/${filename}`,
       baseDestinationUrl: config.destinationUrl,

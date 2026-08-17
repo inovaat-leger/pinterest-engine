@@ -12,14 +12,19 @@ The manifest schema is:
   "images": [
     {
       "pinId": "pin_002",
+      "sourceConceptId": 10,
+      "canonicalTitle": "Manila Airport to Your Hotel: Know Your Options",
       "campaign": "philippines",
       "filename": "manila-airport-to-your-hotel-know-your-options.png",
       "sourceFilename": "Pin2-5.png",
-      "driveFileId": "GOOGLE_DRIVE_FILE_ID"
+      "driveFileId": "GOOGLE_DRIVE_FILE_ID",
+      "altText": "Manila airport-to-hotel planning graphic comparing pickup and transport options."
     }
   ]
 }
 ```
+
+For this campaign the entry is also the canonical identity record. The generator resolves `sourceConceptId`, then requires the generated title, deterministic public filename, Media URL, publishing metadata, and `utm_content` to agree with `pinId`. It does not infer identity from list position or from a filename. ALT text remains in the canonical and manual/API-oriented exports because Pinterest's native bulk CSV has no supported ALT-text column.
 
 `sourceUrl` may be used instead of `driveFileId`, but it must be an HTTPS Google Drive file or direct-download URL from which a file ID can be extracted. Arbitrary hosts are rejected. Do not put access tokens, cookies, credentials, or private URLs in the manifest.
 
@@ -27,7 +32,7 @@ For each new image:
 
 1. Upload the finished image to the approved Google Drive folder using the deterministic filename from `output/manual-posting.csv`.
 2. Set the individual file to **Anyone with the link can view**. Folder visibility alone should not be assumed; verify the file itself from a signed-out browser.
-3. Add one manifest entry with campaign slug, exact filename, and Drive file ID.
+3. Add one complete canonical manifest entry. Never assign artwork by array position alone; use the verified Pin ID, canonical title, source filename, and Drive file ID together.
 4. Commit and deploy the manifest change.
 5. Verify raw bytes and the diagnostic:
 
@@ -59,11 +64,18 @@ The campaign config contains:
 }
 ```
 
-Generate every existing export plus `output/pinterest-bulk-upload.csv`:
+Generate every existing export plus the identity-checked bulk files:
 
 ```bash
 npm run campaign:export
 ```
+
+The two bulk CSVs contain identical corrected rows:
+
+- `output/pinterest-bulk-upload.csv`
+- `output/stampdup-philippines-pinterest-corrected-schedule.csv`
+
+Review `output/pinterest-bulk-preflight.md` before upload. It lists each Pin ID beside its canonical title, source artwork, Drive file ID, public URL, board, UTM content value, local schedule, and validation result. Export fails instead of writing a batch when any canonical identity check disagrees.
 
 Override the schedule without editing campaign configuration:
 
@@ -85,7 +97,7 @@ Before uploading, confirm every Media URL returns a public raw image. In Pintere
 
 1. Open **Settings**.
 2. Select **Import content**.
-3. Upload `output/pinterest-bulk-upload.csv`.
+3. Upload `output/stampdup-philippines-pinterest-corrected-schedule.csv`.
 4. Review Pinterest’s import result and correct any reported row before treating it as scheduled.
 
 Pinterest documents the current headers, limits, raw Media URL requirement, UTC timestamp behavior, and Import content workflow in [Bulk upload Pins](https://help.pinterest.com/en/business/article/bulk-upload-video-pins). Uploading remains a manual account action; this repository does not sign in or publish on the user’s behalf.

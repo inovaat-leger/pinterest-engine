@@ -6,6 +6,7 @@
   "destinationUrl": "https://travel.stampdup.com/philippines-arrival-kit",
   "campaignId": "philippines_arrival_kit",
   "publicImageCampaignSlug": "philippines",
+  "pinImageManifest": "config/pin-images.json",
   "pinterestBulkSchedule": {
     "startDate": "2026-08-22",
     "timezone": "America/Chicago",

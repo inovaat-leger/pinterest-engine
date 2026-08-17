@@ -3,9 +3,11 @@ import { Command } from "commander";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { rowsToCsv } from "./csv.js";
-import { buildExperimentPins, experimentConfig, extractOverlayText, pinFilename, type CampaignConfig, type ExperimentPin, type SourcePin } from "./experiment.js";
+import { buildExperimentPins, experimentConfig, extractOverlayText, type CampaignConfig, type ExperimentPin, type SourcePin } from "./experiment.js";
 import { buildCampaignReport, campaignReportMarkdown, emptyPerformanceStore, mergePerformanceSnapshots, parsePerformanceImport, validatePerformanceStore, type PerformanceStore, type ReviewWindow } from "./performance.js";
-import { toPinterestBulkCsv, type PinterestBulkSchedule } from "./pinterest-bulk.js";
+import { createPinterestBulkRows, pinterestBulkHeaders, resolvePinterestBulkSchedule, type PinterestBulkSchedule } from "./pinterest-bulk.js";
+import { canonicalPinIdentities, validatePinImageManifest } from "./pin-image-proxy.js";
+import { buildPinterestPreflightMarkdown, validateCanonicalBulkIdentity } from "./pin-preflight.js";
 
 type Pin = SourcePin;
 
@@ -44,6 +46,7 @@ function validate(input: unknown): CampaignConfig {
   if (value.publicImageCampaignSlug !== undefined && (typeof value.publicImageCampaignSlug !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value.publicImageCampaignSlug))) {
     throw new Error('Config field "publicImageCampaignSlug" must be a lowercase URL slug.');
   }
+  if (value.pinImageManifest !== undefined && (typeof value.pinImageManifest !== "string" || value.pinImageManifest.trim() === "")) throw new Error('Config field "pinImageManifest" must be a non-empty path.');
   if (value.pinterestBulkSchedule !== undefined) {
     if (!value.pinterestBulkSchedule || typeof value.pinterestBulkSchedule !== "object") throw new Error('Config field "pinterestBulkSchedule" must be an object.');
     const schedule = value.pinterestBulkSchedule as Record<string, unknown>;
@@ -198,10 +201,10 @@ function generatePins(config: CampaignConfig): Pin[] {
         keywordIndexes: [5, 0, 4], boardIndex: 3,
       },
       {
-        title: "Useful Apps to Set Up for a Philippines Arrival",
-        description: `Navigation, airport transport, translation, weather, bookings, and messaging are more useful when they are installed and signed in before landing. Add these app categories and offline backups to your pre-flight setup. ${cta}.`,
-        creativeBrief: "Create an organized phone setup board with generic tiles for maps, rides, translation, weather, bookings, and messages. Overlay: “SET UP BEFORE LANDING.” Keep all icons generic and make the visual a checklist rather than an app endorsement.",
-        keywordIndexes: [2, 6, 7], boardIndex: 0,
+        title: "Philippines Plug & Charging Prep",
+        description: `Check your devices, charger labels, plug shapes, and accommodation details before departure. Pack a suitable adapter when needed and keep a charged power bank available for the airport and first transfer. ${cta}.`,
+        creativeBrief: "Create a practical charging-prep checklist with a phone, charger label, plug adapter, power bank, and accommodation check. Overlay: “PLUG + CHARGING PREP.” Avoid universal voltage or outlet claims and tell travelers to verify their own equipment.",
+        keywordIndexes: [2, 5, 7], boardIndex: 2,
       },
       {
         title: "The Smart Way to Use Maps Without Burning Data",
@@ -210,16 +213,16 @@ function generatePins(config: CampaignConfig): Pin[] {
         keywordIndexes: [0, 2, 1], boardIndex: 3,
       },
       {
-        title: "Add These 6 eSIM Checks to Your Arrival Plan",
-        description: `Review device compatibility, activation timing, data allowance, plan length, hotspot rules, and support before travel. A few minutes of preparation can prevent connectivity surprises during your arrival. ${cta}.`,
-        creativeBrief: "Design six compact checklist cards around a phone: Compatibility, Activation, Data, Days, Hotspot, Support. Overlay: “6 eSIM PRE-FLIGHT CHECKS.” Use neutral educational visuals with no provider logos, prices, rankings, or purchase prompts.",
-        keywordIndexes: [4, 0, 3], boardIndex: 3,
+        title: "Save These Philippines Emergency Contacts",
+        description: `Save your accommodation, insurer, trusted contacts, and the current official emergency information relevant to your route before travel. Keep an offline copy and verify official local numbers for the places you will visit. ${cta}.`,
+        creativeBrief: "Design a calm emergency-contact card with clearly labeled spaces for accommodation, insurer, trusted contact, and verified local services. Overlay: “SAVE CONTACTS OFFLINE.” Do not print unverified phone numbers or imply one number applies everywhere.",
+        keywordIndexes: [2, 5, 1], boardIndex: 0,
       },
       {
-        title: "A Smoother Philippines Arrival Starts Before Landing",
-        description: `Your hotel address is saved, airport transfer is confirmed, and mobile data is ready—so the first hour can focus on getting oriented instead of finding a connection. Use this final pre-flight check for an easier arrival. ${cta}.`,
-        creativeBrief: "Use an airplane-window view approaching the Philippines with three checked cards floating beside a phone: Hotel saved, Transfer confirmed, eSIM ready. Overlay: “ARRIVE READY.” Finish with a warm, optimistic travel palette.",
-        keywordIndexes: [5, 0, 2], boardIndex: 0,
+        title: "Your First Manila Ride: 5 Pickup Checks",
+        description: `Before leaving the terminal, confirm the pickup location, vehicle and driver details where available, hotel address, payment plan, and route. Keep the booking and destination information accessible offline. ${cta}.`,
+        creativeBrief: "Create a five-point airport pickup checklist beside a generic Manila arrival vehicle: pickup zone, vehicle details, driver details, hotel address, payment and route. Overlay: “5 PICKUP CHECKS.” Keep providers generic and avoid safety guarantees.",
+        keywordIndexes: [7, 1, 5], boardIndex: 0,
       },
     ];
 
@@ -296,7 +299,7 @@ function toImagePromptsCsv(pins: ExperimentPin[]): string {
     imagePrompt(pin),
     extractOverlayText(pin),
     visualStyle(pin.creativeBrief),
-    pinFilename(pin),
+    pin.imageFilename,
   ]);
   return rowsToCsv([header, ...rows]);
 }
@@ -304,7 +307,7 @@ function toImagePromptsCsv(pins: ExperimentPin[]): string {
 function toCanvaBulkCreateCsv(pins: ExperimentPin[], config: CampaignConfig): string {
   const header = ["filename", "title", "subtitle", "overlay_text", "destination_url", "visual_prompt", "brand", "category"];
   const rows = pins.map((pin) => [
-    pinFilename(pin),
+    pin.imageFilename,
     pin.title,
     subtitle(pin),
     extractOverlayText(pin),
@@ -324,10 +327,11 @@ function toPinImageProductionJson(pins: ExperimentPin[], config: CampaignConfig)
     const pinVisualStyle = visualStyle(pin.creativeBrief);
     return {
       id: pin.id,
-      filename: pinFilename(pin),
+      filename: pin.imageFilename,
       board: pin.board,
       title: pin.title,
       description: pin.description,
+      alt_text: pin.altText,
       destination_url: pin.destinationUrl,
       overlay_text: pinOverlay,
       image_prompt: `Create a finished 1000x1500 pixel Pinterest pin as a PNG for ${config.brand}. ${pin.creativeBrief} Use the exact overlay text “${pinOverlay}”. Visual style: ${pinVisualStyle}. Brand direction: ${brandNotes} Keep all text highly legible on mobile, maintain clear visual hierarchy, and return one production-ready pin image without mockup framing.`,
@@ -438,10 +442,20 @@ async function writeCampaignOutputs(options: GenerateOptions, action: "Generated
   const { config: configFile, output } = options;
   const config = validate(JSON.parse(await readFile(path.resolve(configFile), "utf8")));
   const sourcePins = generatePins(config);
-  const pins = buildExperimentPins(config, sourcePins);
+  const identities = config.pinImageManifest
+    ? canonicalPinIdentities(
+      validatePinImageManifest(JSON.parse(await readFile(path.resolve(path.dirname(path.resolve(configFile)), config.pinImageManifest), "utf8"))),
+      config.publicImageCampaignSlug ?? "philippines",
+    )
+    : [];
+  const pins = buildExperimentPins(config, sourcePins, identities.length ? identities : undefined);
+  const schedule = resolvePinterestBulkSchedule(config, bulkScheduleOverrides(options));
+  const bulkRows = createPinterestBulkRows(pins, config, schedule);
+  const bulkCsv = rowsToCsv([[...pinterestBulkHeaders], ...bulkRows.map((row) => pinterestBulkHeaders.map((header) => row[header]))]);
+  const preflight = identities.length ? validateCanonicalBulkIdentity(pins, identities, bulkRows, schedule) : undefined;
   const outputDir = path.resolve(output);
   await mkdir(outputDir, { recursive: true });
-  await Promise.all([
+  const files = [
     writeFile(path.join(outputDir, "campaign.json"), JSON.stringify({ campaign: config, pins }, null, 2) + "\n"),
     writeFile(path.join(outputDir, "pins.csv"), toPinsCsv(pins)),
     writeFile(path.join(outputDir, "image-prompts.csv"), toImagePromptsCsv(pins)),
@@ -451,8 +465,13 @@ async function writeCampaignOutputs(options: GenerateOptions, action: "Generated
     writeFile(path.join(outputDir, "experiment-schedule.csv"), toExperimentScheduleCsv(pins)),
     writeFile(path.join(outputDir, "performance-entry.csv"), toPerformanceEntryCsv(pins)),
     writeFile(path.join(outputDir, "experiment-manifest.json"), JSON.stringify(experimentManifest(config, pins), null, 2) + "\n"),
-    writeFile(path.join(outputDir, "pinterest-bulk-upload.csv"), toPinterestBulkCsv(pins, config, bulkScheduleOverrides(options))),
-  ]);
+    writeFile(path.join(outputDir, "pinterest-bulk-upload.csv"), bulkCsv),
+  ];
+  if (preflight) files.push(
+    writeFile(path.join(outputDir, "stampdup-philippines-pinterest-corrected-schedule.csv"), bulkCsv),
+    writeFile(path.join(outputDir, "pinterest-bulk-preflight.md"), buildPinterestPreflightMarkdown(preflight)),
+  );
+  await Promise.all(files);
   console.log(`${action} ${pins.length} pins and automation exports in ${outputDir}`);
 }
 
