@@ -30,6 +30,7 @@ test("canonical preflight binds title, artwork, Media URL, UTM, and schedule to 
   assert.equal(report.length, 20);
   assert.deepEqual(report.map((row) => row.pinId), includePinIds);
   assert.ok(report.every((row) => row.validation === "PASS" && row.utmContent === row.pinId));
+  assert.ok(report.every((row) => new URL(row.mediaUrl).pathname.endsWith("-v2.png")));
 });
 
 test("canonical preflight rejects missing mappings and identity disagreements", () => {

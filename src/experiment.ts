@@ -34,6 +34,7 @@ export type CampaignConfig = {
   publicImageCampaignSlug?: string;
   pinterestBulkSchedule?: PinterestBulkScheduleConfig;
   pinImageManifest?: string;
+  pinImageHistory?: string;
 };
 
 export type CanonicalPinIdentity = {
@@ -45,6 +46,7 @@ export type CanonicalPinIdentity = {
   sourceFilename: string;
   driveFileId: string;
   altText: string;
+  sha256: string;
 };
 
 export type SourcePin = {

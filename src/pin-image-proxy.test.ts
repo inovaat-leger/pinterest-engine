@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
-import { canonicalPinIdentities, validatePinImageManifest } from "./pin-image-proxy.js";
+import { PinImageService, canonicalPinIdentities, validateCanonicalImageHistory, validatePinImageHistory, validatePinImageManifest } from "./pin-image-proxy.js";
 
 test("Pin image manifest accepts only explicit unique Google Drive mappings", () => {
   assert.doesNotThrow(() => validatePinImageManifest({ schemaVersion: 1, images: [{ campaign: "philippines", filename: "pin-012.png", driveFileId: "approvedFile123" }] }));
@@ -12,6 +12,17 @@ test("Pin image manifest accepts only explicit unique Google Drive mappings", ()
     { campaign: "philippines", filename: "pin.png", driveFileId: "approvedFile456" },
   ] }), /Duplicate/);
   assert.throws(() => validatePinImageManifest({ schemaVersion: 1, images: [{ campaign: "../private", filename: "pin.png", driveFileId: "approvedFile123" }] }), /invalid campaign/);
+});
+
+test("immutable history rejects route reassignment and upstream byte changes", async () => {
+  const sha256 = "a".repeat(64);
+  const canonical = validatePinImageManifest({ schemaVersion: 2, images: [{ campaign: "philippines", filename: "pin-v2.png", driveFileId: "approvedFile123", sha256 }] });
+  const history = validatePinImageHistory({ schemaVersion: 1, routes: [{ campaign: "philippines", filename: "pin-v2.png", driveFileId: "approvedFile123", sha256, firstSeenCommit: "v2" }] });
+  assert.doesNotThrow(() => validateCanonicalImageHistory(canonical, history));
+  const reassigned = validatePinImageManifest({ schemaVersion: 2, images: [{ campaign: "philippines", filename: "pin-v2.png", driveFileId: "differentFile456", sha256 }] });
+  assert.throws(() => validateCanonicalImageHistory(reassigned, history), /Immutable image identity changed/);
+  const service = new PinImageService(history, async () => new Response(Buffer.from("not the locked bytes"), { status: 200, headers: { "content-type": "image/png" } }));
+  await assert.rejects(() => service.get("philippines", "pin-v2.png"), /unavailable/);
 });
 
 test("approved Philippines Pin IDs retain their exact registry artwork and canonical titles", () => {

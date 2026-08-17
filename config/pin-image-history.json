@@ -1,0 +1,369 @@
+{
+  "schemaVersion": 1,
+  "routes": [
+    {
+      "campaign": "philippines",
+      "filename": "manila-airport-to-your-hotel-know-your-options.png",
+      "driveFileId": "1l-nkGqTxA0eC0kTX4YIyibIk_6JhrY0I",
+      "sha256": "6b23abfae133d4f371080ee7b2b7a9a48d8bc59b065df841b9006aa81d8947c6",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "the-philippines-travel-checklist-people-forget.png",
+      "driveFileId": "1vn1Nea4TMAWaOC6QNEd2tg-PFiUrQbs3",
+      "sha256": "fe5c9330205e506beda44dec92a9da45fd1747c0e94e37b1e07355fa41e045eb",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "your-first-72-hours-in-the-philippines.png",
+      "driveFileId": "1clsAgp5-YXYHXKUeMZGXC5sWJk6qIcK_",
+      "sha256": "765c902089631e5f44c3406f63ac5c6cb7996ccb7e975d9d29a8320a11d10231",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "philippines-cash-and-atm-prep-before-you-land.png",
+      "driveFileId": "1_MFYJzI1WhwIm4IAIi5bh3csIyaoHOYe",
+      "sha256": "8ac29dd611915631e1fffceb92026829eb1c19a8b6f8790eb79f756343e4cce3",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "dont-make-these-5-esim-setup-mistakes.png",
+      "driveFileId": "1vtL5dxPPZ27RGph-bf_PFvJl2TMvhW2T",
+      "sha256": "6b15318aa7dd69ee7cfefee536af41685a3a0a8779284c613eb73ffd0d43317d",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "what-first-time-visitors-need-at-manila-airport.png",
+      "driveFileId": "104puyvfRygI0nCVgMBZXB0W6UY0Cf-ey",
+      "sha256": "9d7717beccea85b56a140c84d4d51c536538f5c8e783aa9826ec136dc243c269",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "a-digital-nomads-philippines-connectivity-plan.png",
+      "driveFileId": "1DfhBO88pRbWVGnP8CkawtRhTe9PYusjK",
+      "sha256": "ebbd71b09d74469c7df6c3ccdeeed97a14551b8ff91a4f573c028796883c1809",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "9-philippines-arrival-mistakes-to-avoid.png",
+      "driveFileId": "1bzPjy46CARzOpypdX5GN64z1yoM_rG4a",
+      "sha256": "bad7ed0952cb15ee930e18045fc92eec12989df86de90351c63635e80b04466e",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "can-you-keep-your-home-number-with-an-esim.png",
+      "driveFileId": "1fV-6BPpNL2GvFGJPH3mdjEwVwNroH0Jy",
+      "sha256": "de2dec3b42f22283fbf1046f6d732ca5f9f43bee24cb129743ae6207e62a8cc2",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "set-up-your-philippines-esim-before-takeoff.png",
+      "driveFileId": "1Dyl-ccF_YdCwdTgfIXt68rnQK-qXC_nZ",
+      "sha256": "eca87a3a72b6811e3493e17be7905a2bafd99632806b2a8f6406a24c2cc3f550",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "your-connected-first-24-hours-in-manila.png",
+      "driveFileId": "1Ed2QXiiFqmLglO7T1jZ_oI_YxMfZyebE",
+      "sha256": "dcaac38c489680f9c8c2ffb1d81220efb56ff27c2764fd61dc80e5fe66a72671",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "physical-sim-or-esim-for-the-philippines.png",
+      "driveFileId": "1Mv7NunLqWAHbo5Xcaq-M4Vnv73U9_YKz",
+      "sha256": "0c31146f084bf51a4d08277effd96c81da869c7d21bbae1fc6434bb60cdb4098",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "save-this-offline-before-flying-to-manila.png",
+      "driveFileId": "189ekZL7cKDQVpgCYU-Z5Aw_hY5E-7aBs",
+      "sha256": "852edeffdbcdb5ea84512af21f16f94a1e8ed2027c0c5ea38675e1c801699e20",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "your-backup-internet-plan-for-remote-work.png",
+      "driveFileId": "1mRwuZFxR3UQZT6aj8pF_94T6xTLBKCV9",
+      "sha256": "2f890d1b95f88e07d048770384ebde63e87a7f08967d7238b7aa5ddf386d1932",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "is-your-phone-ready-for-a-philippines-esim.png",
+      "driveFileId": "1v-cgwTtFd8QMP8RfcKv9UljFJoX-F-hM",
+      "sha256": "69dbe9f9fbf970e16a7fa13600e9f9d506078eedabd5ae3a2b45f9d1687804cd",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "when-should-you-activate-a-philippines-esim.png",
+      "driveFileId": "1_Oq2uMNfVKEDsNXdflg8D8u1xQOkcRsp",
+      "sha256": "5871b0b7238d1d29f0fabf70ed47c7e3e5396bce86debea110ad5551147dbd88",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "essential-apps-for-your-first-philippines-trip.png",
+      "driveFileId": "1517dcKOfCQCB0vQBqbz09nKI9fZkZay8",
+      "sha256": "25997d0731a67a605c1b1d5759531ed70def404cb0dc2b3b90f7416d5db1c932",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "land-in-manila-with-data-already-working.png",
+      "driveFileId": "1Zcjfu_KiMhF5l8s6WSe63JsC2Qa2PpOT",
+      "sha256": "3ef09e3aa7bee9a725a3bc41cf48a17de8f7fa83528008138e812401735a1921",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "the-smart-way-to-use-maps-without-burning-data.png",
+      "driveFileId": "1k16qduOh755a16utx1ZFQ-ro87sC0EyX",
+      "sha256": "e86a64ae25400eb80a225e633ef8e6ac60e2d778787d2dc03fc0585fdfac8e6c",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "how-much-mobile-data-do-you-need-in-the-philippines.png",
+      "driveFileId": "1llkwTa0ts1OHEdzsSeMhWa8RPuaKJROo",
+      "sha256": "0b46f70894deb1e09f07c2155b32f33dad111e9da199035468a409bb44381156",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "why-airport-wi-fi-shouldnt-be-your-only-plan.png",
+      "driveFileId": "1tHcSlsxz6oaLoVY-wLeVIcYtpu0QrgcR",
+      "sha256": "eedb3476f9531f3ced7a4e055949d8e527611c4ae6629649e72e22a74aa5dae0",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "useful-apps-to-set-up-for-a-philippines-arrival.png",
+      "driveFileId": "14R8s3IcFhGas4bFBrVOAVlcBSDa3W-Yt",
+      "sha256": "da61e4a9967c0796a5ce40c020f20cf2497db94b213867a9d0e4b173ccfe1893",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "add-these-6-esim-checks-to-your-arrival-plan.png",
+      "driveFileId": "1Q9c6pXOLRJ6dycaUgOAv_q0Mz6uf4sde",
+      "sha256": "da7920fa66f5a964d88577701b87ca41220f05224f747ad3154c3a1183395808",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "a-smoother-philippines-arrival-starts-before-landing.png",
+      "driveFileId": "1f7_cFmN_5q6SObtBJGgbF-ZRgoFdt7yS",
+      "sha256": "481c835188589fbb526d2b21dca651f7c254b9168f5bb270be04aae8446093f0",
+      "firstSeenCommit": "c6403b0"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "land-in-manila-connected.png",
+      "driveFileId": "1vtL5dxPPZ27RGph-bf_PFvJl2TMvhW2T",
+      "sha256": "6b15318aa7dd69ee7cfefee536af41685a3a0a8779284c613eb73ffd0d43317d",
+      "firstSeenCommit": "7cb3f61"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "set-up-your-esim-before-takeoff.png",
+      "driveFileId": "104puyvfRygI0nCVgMBZXB0W6UY0Cf-ey",
+      "sha256": "9d7717beccea85b56a140c84d4d51c536538f5c8e783aa9826ec136dc243c269",
+      "firstSeenCommit": "7cb3f61"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "first-time-at-manila-airport.png",
+      "driveFileId": "1DfhBO88pRbWVGnP8CkawtRhTe9PYusjK",
+      "sha256": "ebbd71b09d74469c7df6c3ccdeeed97a14551b8ff91a4f573c028796883c1809",
+      "firstSeenCommit": "7cb3f61"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "physical-sim-or-esim.png",
+      "driveFileId": "1bzPjy46CARzOpypdX5GN64z1yoM_rG4a",
+      "sha256": "bad7ed0952cb15ee930e18045fc92eec12989df86de90351c63635e80b04466e",
+      "firstSeenCommit": "7cb3f61"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "how-much-mobile-data-do-you-need.png",
+      "driveFileId": "1Dyl-ccF_YdCwdTgfIXt68rnQK-qXC_nZ",
+      "sha256": "eca87a3a72b6811e3493e17be7905a2bafd99632806b2a8f6406a24c2cc3f550",
+      "firstSeenCommit": "7cb3f61"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "philippines-plug-and-charging-prep.png",
+      "driveFileId": "1tHcSlsxz6oaLoVY-wLeVIcYtpu0QrgcR",
+      "sha256": "eedb3476f9531f3ced7a4e055949d8e527611c4ae6629649e72e22a74aa5dae0",
+      "firstSeenCommit": "7cb3f61"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "save-these-philippines-emergency-contacts.png",
+      "driveFileId": "1Q9c6pXOLRJ6dycaUgOAv_q0Mz6uf4sde",
+      "sha256": "da7920fa66f5a964d88577701b87ca41220f05224f747ad3154c3a1183395808",
+      "firstSeenCommit": "7cb3f61"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "your-first-manila-ride-5-pickup-checks.png",
+      "driveFileId": "1f7_cFmN_5q6SObtBJGgbF-ZRgoFdt7yS",
+      "sha256": "481c835188589fbb526d2b21dca651f7c254b9168f5bb270be04aae8446093f0",
+      "firstSeenCommit": "7cb3f61"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "land-in-manila-connected-v2.png",
+      "driveFileId": "1vtL5dxPPZ27RGph-bf_PFvJl2TMvhW2T",
+      "sha256": "6b15318aa7dd69ee7cfefee536af41685a3a0a8779284c613eb73ffd0d43317d",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "set-up-your-esim-before-takeoff-v2.png",
+      "driveFileId": "104puyvfRygI0nCVgMBZXB0W6UY0Cf-ey",
+      "sha256": "9d7717beccea85b56a140c84d4d51c536538f5c8e783aa9826ec136dc243c269",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "first-time-at-manila-airport-v2.png",
+      "driveFileId": "1DfhBO88pRbWVGnP8CkawtRhTe9PYusjK",
+      "sha256": "ebbd71b09d74469c7df6c3ccdeeed97a14551b8ff91a4f573c028796883c1809",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "physical-sim-or-esim-v2.png",
+      "driveFileId": "1bzPjy46CARzOpypdX5GN64z1yoM_rG4a",
+      "sha256": "bad7ed0952cb15ee930e18045fc92eec12989df86de90351c63635e80b04466e",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "your-connected-first-24-hours-in-manila-v2.png",
+      "driveFileId": "1fV-6BPpNL2GvFGJPH3mdjEwVwNroH0Jy",
+      "sha256": "de2dec3b42f22283fbf1046f6d732ca5f9f43bee24cb129743ae6207e62a8cc2",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "how-much-mobile-data-do-you-need-v2.png",
+      "driveFileId": "1Dyl-ccF_YdCwdTgfIXt68rnQK-qXC_nZ",
+      "sha256": "eca87a3a72b6811e3493e17be7905a2bafd99632806b2a8f6406a24c2cc3f550",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "9-philippines-arrival-mistakes-to-avoid-v2.png",
+      "driveFileId": "1Ed2QXiiFqmLglO7T1jZ_oI_YxMfZyebE",
+      "sha256": "dcaac38c489680f9c8c2ffb1d81220efb56ff27c2764fd61dc80e5fe66a72671",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "a-digital-nomads-philippines-connectivity-plan-v2.png",
+      "driveFileId": "1Mv7NunLqWAHbo5Xcaq-M4Vnv73U9_YKz",
+      "sha256": "0c31146f084bf51a4d08277effd96c81da869c7d21bbae1fc6434bb60cdb4098",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "your-backup-internet-plan-for-remote-work-v2.png",
+      "driveFileId": "189ekZL7cKDQVpgCYU-Z5Aw_hY5E-7aBs",
+      "sha256": "852edeffdbcdb5ea84512af21f16f94a1e8ed2027c0c5ea38675e1c801699e20",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "can-you-keep-your-home-number-with-an-esim-v2.png",
+      "driveFileId": "1mRwuZFxR3UQZT6aj8pF_94T6xTLBKCV9",
+      "sha256": "2f890d1b95f88e07d048770384ebde63e87a7f08967d7238b7aa5ddf386d1932",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "is-your-phone-ready-for-a-philippines-esim-v2.png",
+      "driveFileId": "1v-cgwTtFd8QMP8RfcKv9UljFJoX-F-hM",
+      "sha256": "69dbe9f9fbf970e16a7fa13600e9f9d506078eedabd5ae3a2b45f9d1687804cd",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "dont-make-these-5-esim-setup-mistakes-v2.png",
+      "driveFileId": "1_Oq2uMNfVKEDsNXdflg8D8u1xQOkcRsp",
+      "sha256": "5871b0b7238d1d29f0fabf70ed47c7e3e5396bce86debea110ad5551147dbd88",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "when-should-you-activate-a-philippines-esim-v2.png",
+      "driveFileId": "1517dcKOfCQCB0vQBqbz09nKI9fZkZay8",
+      "sha256": "25997d0731a67a605c1b1d5759531ed70def404cb0dc2b3b90f7416d5db1c932",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "save-this-offline-before-flying-to-manila-v2.png",
+      "driveFileId": "1Zcjfu_KiMhF5l8s6WSe63JsC2Qa2PpOT",
+      "sha256": "3ef09e3aa7bee9a725a3bc41cf48a17de8f7fa83528008138e812401735a1921",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "essential-apps-for-your-first-philippines-trip-v2.png",
+      "driveFileId": "1k16qduOh755a16utx1ZFQ-ro87sC0EyX",
+      "sha256": "e86a64ae25400eb80a225e633ef8e6ac60e2d778787d2dc03fc0585fdfac8e6c",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "why-airport-wi-fi-shouldnt-be-your-only-plan-v2.png",
+      "driveFileId": "1llkwTa0ts1OHEdzsSeMhWa8RPuaKJROo",
+      "sha256": "0b46f70894deb1e09f07c2155b32f33dad111e9da199035468a409bb44381156",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "philippines-plug-and-charging-prep-v2.png",
+      "driveFileId": "1tHcSlsxz6oaLoVY-wLeVIcYtpu0QrgcR",
+      "sha256": "eedb3476f9531f3ced7a4e055949d8e527611c4ae6629649e72e22a74aa5dae0",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "the-smart-way-to-use-maps-without-burning-data-v2.png",
+      "driveFileId": "14R8s3IcFhGas4bFBrVOAVlcBSDa3W-Yt",
+      "sha256": "da61e4a9967c0796a5ce40c020f20cf2497db94b213867a9d0e4b173ccfe1893",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "save-these-philippines-emergency-contacts-v2.png",
+      "driveFileId": "1Q9c6pXOLRJ6dycaUgOAv_q0Mz6uf4sde",
+      "sha256": "da7920fa66f5a964d88577701b87ca41220f05224f747ad3154c3a1183395808",
+      "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "your-first-manila-ride-5-pickup-checks-v2.png",
+      "driveFileId": "1f7_cFmN_5q6SObtBJGgbF-ZRgoFdt7yS",
+      "sha256": "481c835188589fbb526d2b21dca651f7c254b9168f5bb270be04aae8446093f0",
+      "firstSeenCommit": "v2"
+    }
+  ]
+}

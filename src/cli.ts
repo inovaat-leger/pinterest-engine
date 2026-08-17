@@ -6,7 +6,7 @@ import { rowsToCsv } from "./csv.js";
 import { buildExperimentPins, experimentConfig, extractOverlayText, type CampaignConfig, type ExperimentPin, type SourcePin } from "./experiment.js";
 import { buildCampaignReport, campaignReportMarkdown, emptyPerformanceStore, mergePerformanceSnapshots, parsePerformanceImport, validatePerformanceStore, type PerformanceStore, type ReviewWindow } from "./performance.js";
 import { createPinterestBulkRows, pinterestBulkHeaders, resolvePinterestBulkSchedule, type PinterestBulkSchedule } from "./pinterest-bulk.js";
-import { canonicalPinIdentities, validatePinImageManifest } from "./pin-image-proxy.js";
+import { canonicalPinIdentities, validateCanonicalImageHistory, validatePinImageHistory, validatePinImageManifest } from "./pin-image-proxy.js";
 import { buildPinterestPreflightMarkdown, validateCanonicalBulkIdentity } from "./pin-preflight.js";
 
 type Pin = SourcePin;
@@ -47,6 +47,7 @@ function validate(input: unknown): CampaignConfig {
     throw new Error('Config field "publicImageCampaignSlug" must be a lowercase URL slug.');
   }
   if (value.pinImageManifest !== undefined && (typeof value.pinImageManifest !== "string" || value.pinImageManifest.trim() === "")) throw new Error('Config field "pinImageManifest" must be a non-empty path.');
+  if (value.pinImageHistory !== undefined && (typeof value.pinImageHistory !== "string" || value.pinImageHistory.trim() === "")) throw new Error('Config field "pinImageHistory" must be a non-empty path.');
   if (value.pinterestBulkSchedule !== undefined) {
     if (!value.pinterestBulkSchedule || typeof value.pinterestBulkSchedule !== "object") throw new Error('Config field "pinterestBulkSchedule" must be an object.');
     const schedule = value.pinterestBulkSchedule as Record<string, unknown>;
@@ -442,12 +443,15 @@ async function writeCampaignOutputs(options: GenerateOptions, action: "Generated
   const { config: configFile, output } = options;
   const config = validate(JSON.parse(await readFile(path.resolve(configFile), "utf8")));
   const sourcePins = generatePins(config);
-  const identities = config.pinImageManifest
-    ? canonicalPinIdentities(
-      validatePinImageManifest(JSON.parse(await readFile(path.resolve(path.dirname(path.resolve(configFile)), config.pinImageManifest), "utf8"))),
-      config.publicImageCampaignSlug ?? "philippines",
-    )
-    : [];
+  let identities: ReturnType<typeof canonicalPinIdentities> = [];
+  if (config.pinImageManifest) {
+    const configDirectory = path.dirname(path.resolve(configFile));
+    const canonicalManifest = validatePinImageManifest(JSON.parse(await readFile(path.resolve(configDirectory, config.pinImageManifest), "utf8")));
+    if (!config.pinImageHistory) throw new Error("A pinImageHistory lock file is required when pinImageManifest is configured.");
+    const history = validatePinImageHistory(JSON.parse(await readFile(path.resolve(configDirectory, config.pinImageHistory), "utf8")));
+    validateCanonicalImageHistory(canonicalManifest, history);
+    identities = canonicalPinIdentities(canonicalManifest, config.publicImageCampaignSlug ?? "philippines");
+  }
   const pins = buildExperimentPins(config, sourcePins, identities.length ? identities : undefined);
   const schedule = resolvePinterestBulkSchedule(config, bulkScheduleOverrides(options));
   const bulkRows = createPinterestBulkRows(pins, config, schedule);
@@ -468,8 +472,8 @@ async function writeCampaignOutputs(options: GenerateOptions, action: "Generated
     writeFile(path.join(outputDir, "pinterest-bulk-upload.csv"), bulkCsv),
   ];
   if (preflight) files.push(
-    writeFile(path.join(outputDir, "stampdup-philippines-pinterest-corrected-schedule.csv"), bulkCsv),
-    writeFile(path.join(outputDir, "pinterest-bulk-preflight.md"), buildPinterestPreflightMarkdown(preflight)),
+    writeFile(path.join(outputDir, "stampdup-philippines-pinterest-v2-schedule.csv"), bulkCsv),
+    writeFile(path.join(outputDir, "stampdup-philippines-v2-preflight.md"), buildPinterestPreflightMarkdown(preflight)),
   );
   await Promise.all(files);
   console.log(`${action} ${pins.length} pins and automation exports in ${outputDir}`);

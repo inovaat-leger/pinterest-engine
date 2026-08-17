@@ -9,12 +9,16 @@ export type PinImageManifestEntry = Partial<Pick<CanonicalPinIdentity, "pinId" |
   filename: string;
   driveFileId?: string;
   sourceUrl?: string;
+  sha256?: string;
+  firstSeenCommit?: string;
 };
 
 export type PinImageManifest = {
-  schemaVersion: 1;
+  schemaVersion: 1 | 2;
   images: PinImageManifestEntry[];
 };
+
+export type PinImageHistory = { schemaVersion: 1; routes: PinImageManifestEntry[] };
 
 export type PinImageResult = {
   bytes: Buffer;
@@ -28,7 +32,7 @@ export class PinImageUpstreamError extends Error {
   }
 }
 
-const defaultManifestPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "config", "pin-images.json");
+const defaultManifestPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "config", "pin-image-history.json");
 const allowedContentTypes = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
 const maxImageBytes = 25 * 1024 * 1024;
 const maxRedirects = 5;
@@ -81,7 +85,7 @@ function allowedRedirectHost(hostname: string): boolean {
 export function validatePinImageManifest(input: unknown): PinImageManifest {
   if (!input || typeof input !== "object") throw new Error("Pin image manifest must be a JSON object.");
   const manifest = input as Partial<PinImageManifest>;
-  if (manifest.schemaVersion !== 1 || !Array.isArray(manifest.images)) throw new Error("Unsupported Pin image manifest schema.");
+  if ((manifest.schemaVersion !== 1 && manifest.schemaVersion !== 2) || !Array.isArray(manifest.images)) throw new Error("Unsupported Pin image manifest schema.");
   const seen = new Set<string>();
   const seenPinIds = new Set<string>();
   for (const entry of manifest.images) {
@@ -98,15 +102,36 @@ export function validatePinImageManifest(input: unknown): PinImageManifest {
     if (entry.sourceConceptId !== undefined && (!Number.isInteger(entry.sourceConceptId) || entry.sourceConceptId < 1)) throw new Error(`Invalid source concept ID for ${key}.`);
     if (entry.canonicalTitle !== undefined && (!entry.canonicalTitle.trim() || entry.canonicalTitle.length > 100)) throw new Error(`Invalid canonical title for ${key}.`);
     if (entry.altText !== undefined && (!entry.altText.trim() || entry.altText.length > 500)) throw new Error(`Invalid ALT text for ${key}.`);
+    if (entry.sha256 !== undefined && !/^[a-f0-9]{64}$/.test(entry.sha256)) throw new Error(`Invalid SHA-256 for ${key}.`);
     sourceFor(entry);
   }
   return manifest as PinImageManifest;
 }
 
+export function validatePinImageHistory(input: unknown): PinImageManifest {
+  if (!input || typeof input !== "object") throw new Error("Pin image history must be a JSON object.");
+  const history = input as Partial<PinImageHistory>;
+  if (history.schemaVersion !== 1 || !Array.isArray(history.routes)) throw new Error("Unsupported Pin image history schema.");
+  const manifest = validatePinImageManifest({ schemaVersion: 1, images: history.routes });
+  for (const entry of manifest.images) {
+    if (!entry.sha256 || !entry.firstSeenCommit) throw new Error(`Immutable history entry is incomplete for ${entry.campaign}/${entry.filename}.`);
+  }
+  return manifest;
+}
+
+export function validateCanonicalImageHistory(canonical: PinImageManifest, history: PinImageManifest): void {
+  const locked = new Map(history.images.map((entry) => [`${entry.campaign}/${entry.filename}`, entry]));
+  for (const entry of canonical.images) {
+    const historical = locked.get(`${entry.campaign}/${entry.filename}`);
+    if (!historical) throw new Error(`Canonical image route is missing from immutable history: ${entry.campaign}/${entry.filename}.`);
+    if (!entry.driveFileId || !entry.sha256 || historical.driveFileId !== entry.driveFileId || historical.sha256 !== entry.sha256) throw new Error(`Immutable image identity changed for ${entry.campaign}/${entry.filename}; use a new versioned filename.`);
+  }
+}
+
 export function canonicalPinIdentities(manifest: PinImageManifest, campaign: string): CanonicalPinIdentity[] {
   const entries = manifest.images.filter((entry) => entry.campaign === campaign);
   const identities = entries.map((entry) => {
-    if (!entry.pinId || !entry.sourceConceptId || !entry.canonicalTitle || !entry.sourceFilename || !entry.driveFileId || !entry.altText) {
+    if (!entry.pinId || !entry.sourceConceptId || !entry.canonicalTitle || !entry.sourceFilename || !entry.driveFileId || !entry.altText || !entry.sha256) {
       throw new Error(`Canonical Pin identity is incomplete for ${entry.pinId ?? `${campaign}/${entry.filename}`}.`);
     }
     return {
@@ -118,19 +143,22 @@ export function canonicalPinIdentities(manifest: PinImageManifest, campaign: str
       sourceFilename: entry.sourceFilename,
       driveFileId: entry.driveFileId,
       altText: entry.altText,
+      sha256: entry.sha256!,
     };
   }).sort((a, b) => a.pinId.localeCompare(b.pinId));
   const expected = Array.from({ length: 24 }, (_, index) => `pin_${String(index + 2).padStart(3, "0")}`);
   if (identities.length > 0 && identities.map((identity) => identity.pinId).join(",") !== expected.join(",")) throw new Error("The Philippines canonical Pin catalog must contain each Pin ID from pin_002 through pin_025 exactly once.");
   for (const identity of identities) {
-    const expectedFilename = pinFilename({ id: Number(identity.pinId.slice(4)), title: identity.canonicalTitle });
+    const baseFilename = pinFilename({ id: Number(identity.pinId.slice(4)), title: identity.canonicalTitle });
+    const expectedFilename = Number(identity.pinId.slice(4)) >= 6 ? baseFilename.replace(/\.png$/, "-v2.png") : baseFilename;
     if (identity.filename !== expectedFilename) throw new Error(`${identity.pinId} public filename must be the deterministic filename for its canonical title: ${expectedFilename}.`);
   }
   return identities;
 }
 
 export async function loadPinImageManifest(manifestPath = process.env.PIN_IMAGE_MANIFEST_PATH?.trim() || defaultManifestPath): Promise<PinImageManifest> {
-  return validatePinImageManifest(JSON.parse(await readFile(path.resolve(manifestPath), "utf8")));
+  const input = JSON.parse(await readFile(path.resolve(manifestPath), "utf8"));
+  return "routes" in input ? validatePinImageHistory(input) : validatePinImageManifest(input);
 }
 
 export class PinImageService {
@@ -171,7 +199,9 @@ export class PinImageService {
       if (Number.isFinite(declaredLength) && declaredLength > maxImageBytes) throw new PinImageUpstreamError();
       const bytes = Buffer.from(await upstream.arrayBuffer());
       if (bytes.length === 0 || bytes.length > maxImageBytes) throw new PinImageUpstreamError();
-      const etag = `"${createHash("sha256").update(bytes).digest("hex")}"`;
+      const digest = createHash("sha256").update(bytes).digest("hex");
+      if (entry.sha256 && digest !== entry.sha256) throw new PinImageUpstreamError();
+      const etag = `"${digest}"`;
       const result = { bytes, contentType, etag };
       this.cache.set(key, result);
       return result;

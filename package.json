@@ -16,6 +16,7 @@
     "campaign:export": "node --import tsx src/cli.ts export",
     "campaign:performance:import": "node --import tsx src/cli.ts performance-import",
     "campaign:report": "node --import tsx src/cli.ts report",
+    "campaign:verify:v2": "node --import tsx src/verify-v2.ts",
     "test": "node --test dist/*.test.js",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "sharp": "^0.35.3",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0"
   }

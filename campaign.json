@@ -7,6 +7,7 @@
   "campaignId": "philippines_arrival_kit",
   "publicImageCampaignSlug": "philippines",
   "pinImageManifest": "config/pin-images.json",
+  "pinImageHistory": "config/pin-image-history.json",
   "pinterestBulkSchedule": {
     "startDate": "2026-08-22",
     "timezone": "America/Chicago",
