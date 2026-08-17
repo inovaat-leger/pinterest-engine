@@ -364,6 +364,146 @@
       "driveFileId": "1f7_cFmN_5q6SObtBJGgbF-ZRgoFdt7yS",
       "sha256": "481c835188589fbb526d2b21dca651f7c254b9168f5bb270be04aae8446093f0",
       "firstSeenCommit": "v2"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-026-philippines-arrival-documents-one-folder-v1.png",
+      "localPath": "public/pins/philippines/pin-026-philippines-arrival-documents-one-folder-v1.png",
+      "sha256": "63dd3ae5bcca6a1a9a2219e1c89ad4cb3f8c54f49fe525bd685abd839ec524b6",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-027-philippines-customs-prep-v1.png",
+      "localPath": "public/pins/philippines/pin-027-philippines-customs-prep-v1.png",
+      "sha256": "2ebff6a497635545420cae156be94196074cbf1314a22e59396646cb404c9de4",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-028-hotel-check-in-ready-v1.png",
+      "localPath": "public/pins/philippines/pin-028-hotel-check-in-ready-v1.png",
+      "sha256": "4adf7278279b9aaf9a265e695fe1c2a433f37bddf6ea56018bbc8541f5de7db0",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-029-screenshot-booking-details-v1.png",
+      "localPath": "public/pins/philippines/pin-029-screenshot-booking-details-v1.png",
+      "sha256": "56e77a4230cdcef77a62ca2b26b707fa4b608cb3ae2599692d05ba53105449e0",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-030-hot-philippines-arrival-clothing-v1.png",
+      "localPath": "public/pins/philippines/pin-030-hot-philippines-arrival-clothing-v1.png",
+      "sha256": "0869a435dded87af4590dfa08bc1ea0918513fc20a731d75e7e3d5a0b585a790",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-031-rainy-season-arrival-carry-on-v1.png",
+      "localPath": "public/pins/philippines/pin-031-rainy-season-arrival-carry-on-v1.png",
+      "sha256": "881f64cb311e1d8e9e86ab726645e55c14de11767025496f7fc90c19b19cff97",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-032-heat-hydration-arrival-reset-v1.png",
+      "localPath": "public/pins/philippines/pin-032-heat-hydration-arrival-reset-v1.png",
+      "sha256": "225811897f5baa30531fd3d4b2ea5299d6bd4218f2320698090bf82864ffb049",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-033-first-night-jet-lag-plan-v1.png",
+      "localPath": "public/pins/philippines/pin-033-first-night-jet-lag-plan-v1.png",
+      "sha256": "88fd3ae88b0be4ec0873eb779f12ac197813d37a0b9ffb0dd015ad593c522a98",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-034-philippines-tipping-quick-guide-v1.png",
+      "localPath": "public/pins/philippines/pin-034-philippines-tipping-quick-guide-v1.png",
+      "sha256": "d23e483a702c848f0823847f5884ec71406cf068bc21fe0426e063e8fdb27c33",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-035-respectful-philippines-travel-habits-v1.png",
+      "localPath": "public/pins/philippines/pin-035-respectful-philippines-travel-habits-v1.png",
+      "sha256": "301938cb38937584fc07a5d0a1c37c3006d7d8b26a9624cd33dfee465107830e",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-036-helpful-filipino-phrases-v1.png",
+      "localPath": "public/pins/philippines/pin-036-helpful-filipino-phrases-v1.png",
+      "sha256": "162e3e1588a8149dfd80f093fc473a7efd979984415b7b53b8fdbf4c4d67be95",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-037-first-day-food-water-choices-v1.png",
+      "localPath": "public/pins/philippines/pin-037-first-day-food-water-choices-v1.png",
+      "sha256": "4abb9de8b210a37d2bc8191d05985f11102d98e5a784d5814d2b49b954aba8ab",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-038-medication-travel-prep-v1.png",
+      "localPath": "public/pins/philippines/pin-038-medication-travel-prep-v1.png",
+      "sha256": "8bebd36603c0a4507ab52003c0b268e9b7bd42f63f4844dfe6bf5390cb52ce10",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-039-travel-insurance-details-offline-v1.png",
+      "localPath": "public/pins/philippines/pin-039-travel-insurance-details-offline-v1.png",
+      "sha256": "26b107001a841c922b2395f3d882a0fbe5d8fab5abaeabd38dfafedf43e4971d",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-040-domestic-flight-connection-checklist-v1.png",
+      "localPath": "public/pins/philippines/pin-040-domestic-flight-connection-checklist-v1.png",
+      "sha256": "48adb87e72e07b0fa887c7be04fd64bf9a17caeab0a8b0f230f69d9941711abd",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-041-philippines-ferry-day-prep-v1.png",
+      "localPath": "public/pins/philippines/pin-041-philippines-ferry-day-prep-v1.png",
+      "sha256": "365994221be98e8c1fb81c2fc12324371715bb26158cf8648c2b43fbe5527112",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-042-island-transfer-luggage-plan-v1.png",
+      "localPath": "public/pins/philippines/pin-042-island-transfer-luggage-plan-v1.png",
+      "sha256": "93f7de2058a7b426a863cc86be60fa2e925baa560c772163007c33ce16ce3fec",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-043-solo-arrival-check-in-plan-v1.png",
+      "localPath": "public/pins/philippines/pin-043-solo-arrival-check-in-plan-v1.png",
+      "sha256": "90ac624defdc03de6d77b73c30ecd777d04174318d51d7d435d18a720e8d49eb",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-044-arrival-scam-payment-checks-v1.png",
+      "localPath": "public/pins/philippines/pin-044-arrival-scam-payment-checks-v1.png",
+      "sha256": "a653dcccd6a359a45751ce8a43ca9cc49dc3bc33add65e9e9cfd3befc2919b9a",
+      "firstSeenCommit": "batch-026-045-v1"
+    },
+    {
+      "campaign": "philippines",
+      "filename": "pin-045-philippines-first-night-bag-v1.png",
+      "localPath": "public/pins/philippines/pin-045-philippines-first-night-bag-v1.png",
+      "sha256": "ce6740e6c1ff87d70898123d0edda6eb3cf28110119f6f83503729349f0ec4f5",
+      "firstSeenCommit": "batch-026-045-v1"
     }
   ]
 }

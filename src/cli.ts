@@ -48,6 +48,7 @@ function validate(input: unknown): CampaignConfig {
   }
   if (value.pinImageManifest !== undefined && (typeof value.pinImageManifest !== "string" || value.pinImageManifest.trim() === "")) throw new Error('Config field "pinImageManifest" must be a non-empty path.');
   if (value.pinImageHistory !== undefined && (typeof value.pinImageHistory !== "string" || value.pinImageHistory.trim() === "")) throw new Error('Config field "pinImageHistory" must be a non-empty path.');
+  if (value.additionalPinsFile !== undefined && (typeof value.additionalPinsFile !== "string" || value.additionalPinsFile.trim() === "")) throw new Error('Config field "additionalPinsFile" must be a non-empty path.');
   if (value.pinterestBulkSchedule !== undefined) {
     if (!value.pinterestBulkSchedule || typeof value.pinterestBulkSchedule !== "object") throw new Error('Config field "pinterestBulkSchedule" must be an object.');
     const schedule = value.pinterestBulkSchedule as Record<string, unknown>;
@@ -55,6 +56,7 @@ function validate(input: unknown): CampaignConfig {
     if (!Array.isArray(schedule.dailyTimes) || schedule.dailyTimes.length === 0 || !schedule.dailyTimes.every((time) => typeof time === "string")) throw new Error("Pinterest bulk dailyTimes must be a non-empty string array.");
     if (!Number.isInteger(schedule.pinsPerDay)) throw new Error("Pinterest bulk pinsPerDay must be an integer.");
     if (schedule.includePinIds !== undefined && (!Array.isArray(schedule.includePinIds) || !schedule.includePinIds.every((pinId) => typeof pinId === "string"))) throw new Error("Pinterest bulk includePinIds must be a string array.");
+    if (schedule.immediateDates !== undefined && (!Array.isArray(schedule.immediateDates) || !schedule.immediateDates.every((date) => typeof date === "string"))) throw new Error("Pinterest bulk immediateDates must be a string array.");
   }
   if (value.experiment !== undefined) {
     if (!value.experiment || typeof value.experiment !== "object") throw new Error('Config field "experiment" must be an object.');
@@ -443,6 +445,14 @@ async function writeCampaignOutputs(options: GenerateOptions, action: "Generated
   const { config: configFile, output } = options;
   const config = validate(JSON.parse(await readFile(path.resolve(configFile), "utf8")));
   const sourcePins = generatePins(config);
+  if (config.additionalPinsFile) {
+    const input = JSON.parse(await readFile(path.resolve(path.dirname(path.resolve(configFile)), config.additionalPinsFile), "utf8")) as { schemaVersion?: unknown; pins?: Array<Record<string, unknown>> };
+    if (input.schemaVersion !== 1 || !Array.isArray(input.pins)) throw new Error("Unsupported additional Pins file schema.");
+    for (const record of input.pins) {
+      if (!Number.isInteger(record.id) || typeof record.title !== "string" || typeof record.description !== "string" || typeof record.board !== "string" || !Array.isArray(record.keywords) || !record.keywords.every((item) => typeof item === "string") || typeof record.overlayText !== "string" || typeof record.visualDirection !== "string") throw new Error("Additional Pins file contains a malformed Pin record.");
+      sourcePins.push({ id: record.id as number, title: record.title, description: record.description, board: record.board, destinationUrl: config.destinationUrl, creativeBrief: `${record.visualDirection} Overlay: “${record.overlayText.replace("\n", " / ")}”`, keywords: record.keywords as string[] });
+    }
+  }
   let identities: ReturnType<typeof canonicalPinIdentities> = [];
   if (config.pinImageManifest) {
     const configDirectory = path.dirname(path.resolve(configFile));
@@ -472,8 +482,8 @@ async function writeCampaignOutputs(options: GenerateOptions, action: "Generated
     writeFile(path.join(outputDir, "pinterest-bulk-upload.csv"), bulkCsv),
   ];
   if (preflight) files.push(
-    writeFile(path.join(outputDir, "stampdup-philippines-pinterest-v2-schedule.csv"), bulkCsv),
-    writeFile(path.join(outputDir, "stampdup-philippines-v2-preflight.md"), buildPinterestPreflightMarkdown(preflight)),
+    writeFile(path.join(outputDir, schedule.includePinIds?.[0] === "pin_026" ? "stampdup-philippines-pins-026-045.csv" : "stampdup-philippines-pinterest-v2-schedule.csv"), bulkCsv),
+    writeFile(path.join(outputDir, schedule.includePinIds?.[0] === "pin_026" ? "stampdup-philippines-pins-026-045-preflight.md" : "stampdup-philippines-v2-preflight.md"), buildPinterestPreflightMarkdown(preflight)),
   );
   await Promise.all(files);
   console.log(`${action} ${pins.length} pins and automation exports in ${outputDir}`);

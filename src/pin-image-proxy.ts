@@ -9,6 +9,7 @@ export type PinImageManifestEntry = Partial<Pick<CanonicalPinIdentity, "pinId" |
   filename: string;
   driveFileId?: string;
   sourceUrl?: string;
+  localPath?: string;
   sha256?: string;
   firstSeenCommit?: string;
 };
@@ -78,6 +79,10 @@ function sourceFor(entry: PinImageManifestEntry): URL {
   return new URL(`https://drive.usercontent.google.com/download?id=${encodeURIComponent(fileId)}&export=download&confirm=t`);
 }
 
+function validLocalPath(entry: PinImageManifestEntry): boolean {
+  return typeof entry.localPath === "string" && /^public\/pins\/[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9][a-z0-9._-]*\.png$/i.test(entry.localPath) && path.basename(entry.localPath) === entry.filename;
+}
+
 function allowedRedirectHost(hostname: string): boolean {
   return hostname === "drive.google.com" || hostname === "drive.usercontent.google.com" || hostname === "googleusercontent.com" || hostname.endsWith(".googleusercontent.com");
 }
@@ -103,7 +108,9 @@ export function validatePinImageManifest(input: unknown): PinImageManifest {
     if (entry.canonicalTitle !== undefined && (!entry.canonicalTitle.trim() || entry.canonicalTitle.length > 100)) throw new Error(`Invalid canonical title for ${key}.`);
     if (entry.altText !== undefined && (!entry.altText.trim() || entry.altText.length > 500)) throw new Error(`Invalid ALT text for ${key}.`);
     if (entry.sha256 !== undefined && !/^[a-f0-9]{64}$/.test(entry.sha256)) throw new Error(`Invalid SHA-256 for ${key}.`);
-    sourceFor(entry);
+    if (entry.localPath !== undefined) {
+      if (!validLocalPath(entry) || entry.driveFileId || entry.sourceUrl) throw new Error(`Invalid or conflicting local Pin image source for ${key}.`);
+    } else sourceFor(entry);
   }
   return manifest as PinImageManifest;
 }
@@ -124,14 +131,14 @@ export function validateCanonicalImageHistory(canonical: PinImageManifest, histo
   for (const entry of canonical.images) {
     const historical = locked.get(`${entry.campaign}/${entry.filename}`);
     if (!historical) throw new Error(`Canonical image route is missing from immutable history: ${entry.campaign}/${entry.filename}.`);
-    if (!entry.driveFileId || !entry.sha256 || historical.driveFileId !== entry.driveFileId || historical.sha256 !== entry.sha256) throw new Error(`Immutable image identity changed for ${entry.campaign}/${entry.filename}; use a new versioned filename.`);
+    if (!entry.sha256 || historical.driveFileId !== entry.driveFileId || historical.localPath !== entry.localPath || historical.sha256 !== entry.sha256) throw new Error(`Immutable image identity changed for ${entry.campaign}/${entry.filename}; use a new versioned filename.`);
   }
 }
 
 export function canonicalPinIdentities(manifest: PinImageManifest, campaign: string): CanonicalPinIdentity[] {
   const entries = manifest.images.filter((entry) => entry.campaign === campaign);
   const identities = entries.map((entry) => {
-    if (!entry.pinId || !entry.sourceConceptId || !entry.canonicalTitle || !entry.sourceFilename || !entry.driveFileId || !entry.altText || !entry.sha256) {
+    if (!entry.pinId || !entry.sourceConceptId || !entry.canonicalTitle || !entry.sourceFilename || (!entry.driveFileId && !entry.localPath) || !entry.altText || !entry.sha256) {
       throw new Error(`Canonical Pin identity is incomplete for ${entry.pinId ?? `${campaign}/${entry.filename}`}.`);
     }
     return {
@@ -142,15 +149,21 @@ export function canonicalPinIdentities(manifest: PinImageManifest, campaign: str
       filename: entry.filename,
       sourceFilename: entry.sourceFilename,
       driveFileId: entry.driveFileId,
+      localPath: entry.localPath,
       altText: entry.altText,
       sha256: entry.sha256!,
     };
   }).sort((a, b) => a.pinId.localeCompare(b.pinId));
-  const expected = Array.from({ length: 24 }, (_, index) => `pin_${String(index + 2).padStart(3, "0")}`);
-  if (identities.length > 0 && identities.map((identity) => identity.pinId).join(",") !== expected.join(",")) throw new Error("The Philippines canonical Pin catalog must contain each Pin ID from pin_002 through pin_025 exactly once.");
+  const expected = Array.from({ length: 44 }, (_, index) => `pin_${String(index + 2).padStart(3, "0")}`);
+  if (identities.length > 0 && identities.map((identity) => identity.pinId).join(",") !== expected.join(",")) throw new Error("The Philippines canonical Pin catalog must contain each Pin ID from pin_002 through pin_045 exactly once.");
   for (const identity of identities) {
-    const baseFilename = pinFilename({ id: Number(identity.pinId.slice(4)), title: identity.canonicalTitle });
-    const expectedFilename = Number(identity.pinId.slice(4)) >= 6 ? baseFilename.replace(/\.png$/, "-v2.png") : baseFilename;
+    const number = Number(identity.pinId.slice(4));
+    if (number >= 26) {
+      if (!new RegExp(`^pin-${String(number).padStart(3, "0")}-[a-z0-9]+(?:-[a-z0-9]+)*-v1\\.png$`).test(identity.filename)) throw new Error(`${identity.pinId} must use its identity-safe pin-${String(number).padStart(3, "0")}-…-v1.png filename.`);
+      continue;
+    }
+    const baseFilename = pinFilename({ id: number, title: identity.canonicalTitle });
+    const expectedFilename = number >= 6 ? baseFilename.replace(/\.png$/, "-v2.png") : baseFilename;
     if (identity.filename !== expectedFilename) throw new Error(`${identity.pinId} public filename must be the deterministic filename for its canonical title: ${expectedFilename}.`);
   }
   return identities;
@@ -181,6 +194,14 @@ export class PinImageService {
     const cached = this.cache.get(key);
     if (cached) return cached;
     try {
+      if (entry.localPath) {
+        const bytes = await readFile(path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", entry.localPath));
+        const digest = createHash("sha256").update(bytes).digest("hex");
+        if (!entry.sha256 || digest !== entry.sha256) throw new PinImageUpstreamError();
+        const result = { bytes, contentType: "image/png", etag: `"${digest}"` };
+        this.cache.set(key, result);
+        return result;
+      }
       let url = sourceFor(entry);
       let upstream: Response | undefined;
       for (let redirect = 0; redirect <= maxRedirects; redirect += 1) {

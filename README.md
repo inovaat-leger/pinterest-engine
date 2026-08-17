@@ -36,6 +36,10 @@ The CLI writes the campaign exports plus identity-checked Pinterest scheduling f
 - `output/stampdup-philippines-pinterest-v2-schedule.csv` — cache-safe replacement schedule using never-before-used `-v2.png` Media URLs
 - `output/stampdup-philippines-v2-preflight.md` — live production byte-identity report from `npm run campaign:verify:v2`
 - `output/stampdup-philippines-v2-visual-preflight.png` — contact sheet made from live production responses
+- `output/stampdup-philippines-pins-026-045.csv` — 20-row native Pinterest batch for the new Pins #26–#45
+- `output/stampdup-philippines-pins-026-045-preflight.md` — live byte-identity, metadata, UTM, and schedule report
+- `output/stampdup-philippines-pins-026-045-visual-preflight.png` — contact sheet made only from the new live production responses
+- `output/stampdup-philippines-pins-026-045-registry.csv` — import-ready canonical metadata and ALT-text sidecar
 
 Regenerate the same automation-ready exports explicitly with:
 
@@ -46,6 +50,8 @@ npm run campaign:export
 The Philippines campaign produces a deliberate 20-Pin sprint—five Pins per week for four weeks—with five concepts held in reserve. Pin #1 is the existing untagged baseline. Pins #2 onward receive stable, unique Pinterest organic UTM URLs. See the [experiment operating guide](docs/PINTEREST_EXPERIMENT_OPERATIONS.md) for the schedule, Pin/experiment IDs, reserve policy, publication workflow, event mapping, performance imports, report commands, and interpretation limits.
 
 Public Pin images use allowlisted Google Drive mappings at `/pins/{campaign}/{filename}`. `config/pin-images.json` is the canonical identity catalog; `config/pin-image-history.json` is the append-only immutable route ledger. Pin ID, title, artwork, Drive ID, SHA-256, versioned public filename, ALT text, publishing metadata, and UTM identity must agree before export. Run `npm run campaign:verify:v2` after deployment to compare live production bytes with Drive and build the final report/contact sheet. See [public Pin images and Pinterest bulk upload](docs/PIN_IMAGE_AND_BULK_UPLOAD.md).
+
+Pins #26–#45 use the same allowlist and immutable ledger with committed, SHA-256-locked artwork under `public/pins/philippines/`; no external credentials are required for those routes. Their editable production backgrounds stay local and ignored, while the finished 1000×1500 PNGs are committed as the approved bytes. Rebuilding or correcting an image requires a new versioned public filename—an existing route must never be repointed. Build the artwork with `npm run campaign:images:build:026-045`, generate exports with `npm run campaign:export`, then run `npm run campaign:verify:026-045` after deployment. The verifier fetches every live URL without redirects, compares it byte-for-byte with the approved file, and creates the final preflight, contact sheet, and Registry sidecar.
 
 Import completed performance rows and produce reports with:
 

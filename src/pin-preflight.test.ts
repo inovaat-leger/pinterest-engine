@@ -43,5 +43,5 @@ test("canonical preflight rejects missing mappings and identity disagreements", 
   const badUtm = rows.map((row) => ({ ...row })); badUtm[2].Link = badUtm[2].Link.replace("pin_008", "pin_009");
   assert.throws(() => validateCanonicalBulkIdentity(pins, identities, badUtm, schedule), /UTM content/);
   assert.throws(() => validateCanonicalBulkIdentity(pins, identities, rows.slice(1), schedule), /exactly 20 rows/);
-  assert.throws(() => validateCanonicalBulkIdentity(pins, identities, rows, { ...schedule, includePinIds: ["pin_005", ...includePinIds.slice(1)] }), /Pins #6–#25/);
+  assert.throws(() => validateCanonicalBulkIdentity(pins, identities, rows, { ...schedule, includePinIds: ["pin_005", ...includePinIds.slice(1)] }), /exclude Pins #1–#5/);
 });

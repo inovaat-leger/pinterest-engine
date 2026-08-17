@@ -1,6 +1,7 @@
 node_modules/
 dist/
 output/
+artwork/source-backgrounds/
 .env
 *.log
 .DS_Store

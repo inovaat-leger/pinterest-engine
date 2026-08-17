@@ -17,6 +17,7 @@ export type PinterestBulkScheduleConfig = {
   dailyTimes: string[];
   pinsPerDay: number;
   includePinIds?: string[];
+  immediateDates?: string[];
 };
 
 export type CampaignConfig = {
@@ -35,6 +36,7 @@ export type CampaignConfig = {
   pinterestBulkSchedule?: PinterestBulkScheduleConfig;
   pinImageManifest?: string;
   pinImageHistory?: string;
+  additionalPinsFile?: string;
 };
 
 export type CanonicalPinIdentity = {
@@ -44,7 +46,8 @@ export type CanonicalPinIdentity = {
   campaign: string;
   filename: string;
   sourceFilename: string;
-  driveFileId: string;
+  driveFileId?: string;
+  localPath?: string;
   altText: string;
   sha256: string;
 };
@@ -125,6 +128,26 @@ const philippinesAssignments: Assignment[] = [
   { sourceConceptId: 22, topicPillar: "offline_preparation", primarySearchPhrase: "Philippines plug and charging prep", travelerIntent: "prepare_offline", creativeFormat: "saveable_checklist", notes: "Reserve concept." },
   { sourceConceptId: 24, topicPillar: "offline_preparation", primarySearchPhrase: "Philippines emergency contacts", travelerIntent: "prepare_offline", creativeFormat: "saveable_checklist", notes: "Reserve concept." },
   { sourceConceptId: 25, topicPillar: "airport_logistics", primarySearchPhrase: "Manila airport pickup checks", travelerIntent: "navigate_arrival", creativeFormat: "step_by_step_infographic", notes: "Reserve concept." },
+  { sourceConceptId: 26, topicPillar: "offline_preparation", primarySearchPhrase: "Philippines arrival documents", travelerIntent: "prepare_offline", creativeFormat: "saveable_checklist" },
+  { sourceConceptId: 27, topicPillar: "airport_logistics", primarySearchPhrase: "Philippines customs preparation", travelerIntent: "navigate_arrival", creativeFormat: "step_by_step_infographic" },
+  { sourceConceptId: 28, topicPillar: "first_72_hours", primarySearchPhrase: "Philippines hotel check in", travelerIntent: "settle_first_days", creativeFormat: "saveable_checklist" },
+  { sourceConceptId: 29, topicPillar: "offline_preparation", primarySearchPhrase: "travel booking screenshots", travelerIntent: "prepare_offline", creativeFormat: "step_by_step_infographic" },
+  { sourceConceptId: 30, topicPillar: "first_72_hours", primarySearchPhrase: "what to wear Philippines", travelerIntent: "settle_first_days", creativeFormat: "travel_photo_led" },
+  { sourceConceptId: 31, topicPillar: "offline_preparation", primarySearchPhrase: "Philippines rainy season packing", travelerIntent: "prepare_offline", creativeFormat: "saveable_checklist" },
+  { sourceConceptId: 32, topicPillar: "first_72_hours", primarySearchPhrase: "Philippines heat travel tips", travelerIntent: "settle_first_days", creativeFormat: "timeline" },
+  { sourceConceptId: 33, topicPillar: "first_72_hours", primarySearchPhrase: "jet lag Philippines", travelerIntent: "settle_first_days", creativeFormat: "timeline" },
+  { sourceConceptId: 34, topicPillar: "money_payment", primarySearchPhrase: "Philippines tipping guide", travelerIntent: "manage_money", creativeFormat: "comparison_decision" },
+  { sourceConceptId: 35, topicPillar: "first_72_hours", primarySearchPhrase: "Philippines travel etiquette", travelerIntent: "settle_first_days", creativeFormat: "saveable_checklist" },
+  { sourceConceptId: 36, topicPillar: "offline_preparation", primarySearchPhrase: "Filipino phrases for travelers", travelerIntent: "prepare_offline", creativeFormat: "saveable_checklist" },
+  { sourceConceptId: 37, topicPillar: "first_72_hours", primarySearchPhrase: "Philippines first day food", travelerIntent: "settle_first_days", creativeFormat: "travel_photo_led" },
+  { sourceConceptId: 38, topicPillar: "offline_preparation", primarySearchPhrase: "travel medication checklist", travelerIntent: "prepare_offline", creativeFormat: "saveable_checklist" },
+  { sourceConceptId: 39, topicPillar: "offline_preparation", primarySearchPhrase: "travel insurance offline", travelerIntent: "prepare_offline", creativeFormat: "step_by_step_infographic" },
+  { sourceConceptId: 40, topicPillar: "airport_logistics", primarySearchPhrase: "Philippines domestic flight", travelerIntent: "navigate_arrival", creativeFormat: "saveable_checklist" },
+  { sourceConceptId: 41, topicPillar: "airport_logistics", primarySearchPhrase: "Philippines ferry travel", travelerIntent: "navigate_arrival", creativeFormat: "saveable_checklist" },
+  { sourceConceptId: 42, topicPillar: "offline_preparation", primarySearchPhrase: "Philippines island packing", travelerIntent: "prepare_offline", creativeFormat: "comparison_decision" },
+  { sourceConceptId: 43, topicPillar: "first_72_hours", primarySearchPhrase: "solo travel Philippines", travelerIntent: "settle_first_days", creativeFormat: "step_by_step_infographic" },
+  { sourceConceptId: 44, topicPillar: "money_payment", primarySearchPhrase: "Philippines tourist scam tips", travelerIntent: "manage_money", creativeFormat: "mistakes_to_avoid" },
+  { sourceConceptId: 45, topicPillar: "offline_preparation", primarySearchPhrase: "Philippines first night bag", travelerIntent: "prepare_offline", creativeFormat: "saveable_checklist" },
 ];
 
 export function extractOverlayText(pin: SourcePin): string {
@@ -208,16 +231,17 @@ export function buildExperimentPins(config: CampaignConfig, sourcePins: SourcePi
   const imageCampaignSlug = config.publicImageCampaignSlug ?? (config.campaignId === "philippines_arrival_kit" ? "philippines" : config.campaignId ?? "campaign");
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(imageCampaignSlug)) throw new Error(`Invalid public image campaign slug: ${imageCampaignSlug}.`);
 
-  const isPhilippinesSprint = campaignId === "philippines_arrival_kit" && sourcePins.length === 25;
-  const canonicalByPinId = new Map((canonicalIdentities ?? []).map((identity) => [identity.pinId, identity]));
-  if (isPhilippinesSprint && canonicalIdentities && canonicalIdentities.length !== 24) throw new Error(`The Philippines canonical catalog must contain Pins #2–#25; received ${canonicalIdentities.length} entries.`);
+  const isPhilippinesSprint = campaignId === "philippines_arrival_kit" && sourcePins.length >= 25;
+  const usableIdentities = (canonicalIdentities ?? []).filter((identity) => Number(identity.pinId.slice(4)) <= sourcePins.length);
+  const canonicalByPinId = new Map(usableIdentities.map((identity) => [identity.pinId, identity]));
+  if (isPhilippinesSprint && canonicalIdentities && usableIdentities.length !== sourcePins.length - 1) throw new Error(`The Philippines canonical catalog must contain Pins #2–#${sourcePins.length}; received ${usableIdentities.length} usable entries.`);
   const assignments: Assignment[] = isPhilippinesSprint && canonicalIdentities
-    ? [philippinesAssignments[0], ...canonicalIdentities.map((identity) => {
+    ? [philippinesAssignments[0], ...usableIdentities.map((identity) => {
       const metadata = philippinesAssignments.find((assignment) => assignment.sourceConceptId === identity.sourceConceptId);
       if (!metadata) throw new Error(`${identity.pinId} references source concept ${identity.sourceConceptId}, which has no experiment metadata.`);
       return { ...metadata, sourceConceptId: identity.sourceConceptId };
     })]
-    : isPhilippinesSprint ? philippinesAssignments : sourcePins.map((pin) => ({
+    : isPhilippinesSprint ? philippinesAssignments.slice(0, sourcePins.length) : sourcePins.map((pin) => ({
     sourceConceptId: pin.id,
     topicPillar: "offline_preparation" as TopicPillar,
     primarySearchPhrase: pin.keywords[0] ?? pin.title,

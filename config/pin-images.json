@@ -264,6 +264,226 @@
       "driveFileId": "1f7_cFmN_5q6SObtBJGgbF-ZRgoFdt7yS",
       "altText": "Manila airport ride checklist covering pickup zone, vehicle and driver details, hotel address, payment, and route.",
       "sha256": "481c835188589fbb526d2b21dca651f7c254b9168f5bb270be04aae8446093f0"
+    },
+    {
+      "pinId": "pin_026",
+      "sourceConceptId": 26,
+      "canonicalTitle": "Philippines Arrival Documents: One Folder, Zero Guesswork",
+      "campaign": "philippines",
+      "filename": "pin-026-philippines-arrival-documents-one-folder-v1.png",
+      "sourceFilename": "pin-026-philippines-arrival-documents-one-folder-v1.png",
+      "localPath": "public/pins/philippines/pin-026-philippines-arrival-documents-one-folder-v1.png",
+      "altText": "Organized travel desk with document folder, phone, and passport wallet beneath the words Arrival Documents, One Folder.",
+      "sha256": "63dd3ae5bcca6a1a9a2219e1c89ad4cb3f8c54f49fe525bd685abd839ec524b6"
+    },
+    {
+      "pinId": "pin_027",
+      "sourceConceptId": 27,
+      "canonicalTitle": "Philippines Customs Prep: What to Organize Before Landing",
+      "campaign": "philippines",
+      "filename": "pin-027-philippines-customs-prep-v1.png",
+      "sourceFilename": "pin-027-philippines-customs-prep-v1.png",
+      "localPath": "public/pins/philippines/pin-027-philippines-customs-prep-v1.png",
+      "altText": "Traveler with an organized carry-on at an airport customs area beneath the words Customs Ready Before You Land.",
+      "sha256": "2ebff6a497635545420cae156be94196074cbf1314a22e59396646cb404c9de4"
+    },
+    {
+      "pinId": "pin_028",
+      "sourceConceptId": 28,
+      "canonicalTitle": "Hotel Check-In Ready After a Long Flight",
+      "campaign": "philippines",
+      "filename": "pin-028-hotel-check-in-ready-v1.png",
+      "sourceFilename": "pin-028-hotel-check-in-ready-v1.png",
+      "localPath": "public/pins/philippines/pin-028-hotel-check-in-ready-v1.png",
+      "altText": "Traveler checking in at a modern Manila hotel with phone and luggage beneath the words Hotel Check-In Ready.",
+      "sha256": "4adf7278279b9aaf9a265e695fe1c2a433f37bddf6ea56018bbc8541f5de7db0"
+    },
+    {
+      "pinId": "pin_029",
+      "sourceConceptId": 29,
+      "canonicalTitle": "Screenshot These 4 Booking Details Before You Fly",
+      "campaign": "philippines",
+      "filename": "pin-029-screenshot-booking-details-v1.png",
+      "sourceFilename": "pin-029-screenshot-booking-details-v1.png",
+      "localPath": "public/pins/philippines/pin-029-screenshot-booking-details-v1.png",
+      "altText": "Phone beside hotel key card, map pin, and booking cards beneath the words Screenshot Before You Fly.",
+      "sha256": "56e77a4230cdcef77a62ca2b26b707fa4b608cb3ae2599692d05ba53105449e0"
+    },
+    {
+      "pinId": "pin_030",
+      "sourceConceptId": 30,
+      "canonicalTitle": "What to Wear for a Hot Philippines Arrival",
+      "campaign": "philippines",
+      "filename": "pin-030-hot-philippines-arrival-clothing-v1.png",
+      "sourceFilename": "pin-030-hot-philippines-arrival-clothing-v1.png",
+      "localPath": "public/pins/philippines/pin-030-hot-philippines-arrival-clothing-v1.png",
+      "altText": "Open suitcase with lightweight clothes, sun hat, shoes, and water bottle beneath the words Dress for the Heat.",
+      "sha256": "0869a435dded87af4590dfa08bc1ea0918513fc20a731d75e7e3d5a0b585a790"
+    },
+    {
+      "pinId": "pin_031",
+      "sourceConceptId": 31,
+      "canonicalTitle": "Rainy-Season Arrival: Pack This in Your Carry-On",
+      "campaign": "philippines",
+      "filename": "pin-031-rainy-season-arrival-carry-on-v1.png",
+      "sourceFilename": "pin-031-rainy-season-arrival-carry-on-v1.png",
+      "localPath": "public/pins/philippines/pin-031-rainy-season-arrival-carry-on-v1.png",
+      "altText": "Traveler under a covered Manila walkway with umbrella, rain layer, and waterproof pouch beneath the words Rainy Arrival Carry-On.",
+      "sha256": "881f64cb311e1d8e9e86ab726645e55c14de11767025496f7fc90c19b19cff97"
+    },
+    {
+      "pinId": "pin_032",
+      "sourceConceptId": 32,
+      "canonicalTitle": "Your First Hours in Philippine Heat: A Gentle Reset",
+      "campaign": "philippines",
+      "filename": "pin-032-heat-hydration-arrival-reset-v1.png",
+      "sourceFilename": "pin-032-heat-hydration-arrival-reset-v1.png",
+      "localPath": "public/pins/philippines/pin-032-heat-hydration-arrival-reset-v1.png",
+      "altText": "Traveler resting in a shaded tropical courtyard with water and a light snack beneath the words Heat and Hydration Arrival Reset.",
+      "sha256": "225811897f5baa30531fd3d4b2ea5299d6bd4218f2320698090bf82864ffb049"
+    },
+    {
+      "pinId": "pin_033",
+      "sourceConceptId": 33,
+      "canonicalTitle": "A Better First Night After a Long-Haul Flight",
+      "campaign": "philippines",
+      "filename": "pin-033-first-night-jet-lag-plan-v1.png",
+      "sourceFilename": "pin-033-first-night-jet-lag-plan-v1.png",
+      "localPath": "public/pins/philippines/pin-033-first-night-jet-lag-plan-v1.png",
+      "altText": "Calm Philippines hotel room at dusk with water, simple meal, and phone alarm beneath the words Your First-Night Jet-Lag Plan.",
+      "sha256": "88fd3ae88b0be4ec0873eb779f12ac197813d37a0b9ffb0dd015ad593c522a98"
+    },
+    {
+      "pinId": "pin_034",
+      "sourceConceptId": 34,
+      "canonicalTitle": "Philippines Tipping: A Calm Quick Guide",
+      "campaign": "philippines",
+      "filename": "pin-034-philippines-tipping-quick-guide-v1.png",
+      "sourceFilename": "pin-034-philippines-tipping-quick-guide-v1.png",
+      "localPath": "public/pins/philippines/pin-034-philippines-tipping-quick-guide-v1.png",
+      "altText": "Travel-service collage with restaurant bill folder, hotel luggage help, and wallet beneath the words Tipping in the Philippines.",
+      "sha256": "d23e483a702c848f0823847f5884ec71406cf068bc21fe0426e063e8fdb27c33"
+    },
+    {
+      "pinId": "pin_035",
+      "sourceConceptId": 35,
+      "canonicalTitle": "5 Respectful Habits for Your First Philippines Trip",
+      "campaign": "philippines",
+      "filename": "pin-035-respectful-philippines-travel-habits-v1.png",
+      "sourceFilename": "pin-035-respectful-philippines-travel-habits-v1.png",
+      "localPath": "public/pins/philippines/pin-035-respectful-philippines-travel-habits-v1.png",
+      "altText": "Travelers greeting Filipino hosts in a warm contemporary setting beneath the words Arrive With Respect.",
+      "sha256": "301938cb38937584fc07a5d0a1c37c3006d7d8b26a9624cd33dfee465107830e"
+    },
+    {
+      "pinId": "pin_036",
+      "sourceConceptId": 36,
+      "canonicalTitle": "Helpful Filipino Phrases to Save Before Arrival",
+      "campaign": "philippines",
+      "filename": "pin-036-helpful-filipino-phrases-v1.png",
+      "sourceFilename": "pin-036-helpful-filipino-phrases-v1.png",
+      "localPath": "public/pins/philippines/pin-036-helpful-filipino-phrases-v1.png",
+      "altText": "Traveler and local person communicating at a cafe with phone speech bubbles beneath the words Save a Few Filipino Phrases.",
+      "sha256": "162e3e1588a8149dfd80f093fc473a7efd979984415b7b53b8fdbf4c4d67be95"
+    },
+    {
+      "pinId": "pin_037",
+      "sourceConceptId": 37,
+      "canonicalTitle": "First-Day Food and Water Choices After You Land",
+      "campaign": "philippines",
+      "filename": "pin-037-first-day-food-water-choices-v1.png",
+      "sourceFilename": "pin-037-first-day-food-water-choices-v1.png",
+      "localPath": "public/pins/philippines/pin-037-first-day-food-water-choices-v1.png",
+      "altText": "Clean Filipino cafe table with sealed water, simple cooked meal, and fruit beneath the words First-Day Food and Water.",
+      "sha256": "4abb9de8b210a37d2bc8191d05985f11102d98e5a784d5814d2b49b954aba8ab"
+    },
+    {
+      "pinId": "pin_038",
+      "sourceConceptId": 38,
+      "canonicalTitle": "Pack Your Medication Plan Before the Philippines",
+      "campaign": "philippines",
+      "filename": "pin-038-medication-travel-prep-v1.png",
+      "sourceFilename": "pin-038-medication-travel-prep-v1.png",
+      "localPath": "public/pins/philippines/pin-038-medication-travel-prep-v1.png",
+      "altText": "Organized travel medication pouch, pill organizer, and document copies beneath the words Medication Travel Prep.",
+      "sha256": "8bebd36603c0a4507ab52003c0b268e9b7bd42f63f4844dfe6bf5390cb52ce10"
+    },
+    {
+      "pinId": "pin_039",
+      "sourceConceptId": 39,
+      "canonicalTitle": "Save Your Travel Insurance Details Offline",
+      "campaign": "philippines",
+      "filename": "pin-039-travel-insurance-details-offline-v1.png",
+      "sourceFilename": "pin-039-travel-insurance-details-offline-v1.png",
+      "localPath": "public/pins/philippines/pin-039-travel-insurance-details-offline-v1.png",
+      "altText": "Phone and travel policy wallet with offline download and contact cards beneath the words Insurance Info Save Offline.",
+      "sha256": "26b107001a841c922b2395f3d882a0fbe5d8fab5abaeabd38dfafedf43e4971d"
+    },
+    {
+      "pinId": "pin_040",
+      "sourceConceptId": 40,
+      "canonicalTitle": "Philippines Domestic Flight Connection Checklist",
+      "campaign": "philippines",
+      "filename": "pin-040-domestic-flight-connection-checklist-v1.png",
+      "sourceFilename": "pin-040-domestic-flight-connection-checklist-v1.png",
+      "localPath": "public/pins/philippines/pin-040-domestic-flight-connection-checklist-v1.png",
+      "altText": "Traveler in a Philippines departure hall with carry-on, phone, and blank boarding cards beneath the words Domestic Flight Connection.",
+      "sha256": "48adb87e72e07b0fa887c7be04fd64bf9a17caeab0a8b0f230f69d9941711abd"
+    },
+    {
+      "pinId": "pin_041",
+      "sourceConceptId": 41,
+      "canonicalTitle": "Philippines Ferry Day: What to Keep With You",
+      "campaign": "philippines",
+      "filename": "pin-041-philippines-ferry-day-prep-v1.png",
+      "sourceFilename": "pin-041-philippines-ferry-day-prep-v1.png",
+      "localPath": "public/pins/philippines/pin-041-philippines-ferry-day-prep-v1.png",
+      "altText": "Traveler at a tropical Philippines ferry port with compact luggage and dry pouch beneath the words Ferry Day Keep It Handy.",
+      "sha256": "365994221be98e8c1fb81c2fc12324371715bb26158cf8648c2b43fbe5527112"
+    },
+    {
+      "pinId": "pin_042",
+      "sourceConceptId": 42,
+      "canonicalTitle": "Pack Lighter for Philippines Island Transfers",
+      "campaign": "philippines",
+      "filename": "pin-042-island-transfer-luggage-plan-v1.png",
+      "sourceFilename": "pin-042-island-transfer-luggage-plan-v1.png",
+      "localPath": "public/pins/philippines/pin-042-island-transfer-luggage-plan-v1.png",
+      "altText": "Traveler organizing a compact suitcase and daypack beside island-transfer cues beneath the words Island Transfer Luggage Plan.",
+      "sha256": "93f7de2058a7b426a863cc86be60fa2e925baa560c772163007c33ce16ce3fec"
+    },
+    {
+      "pinId": "pin_043",
+      "sourceConceptId": 43,
+      "canonicalTitle": "Solo Arrival: Your Calm Check-In Safety Plan",
+      "campaign": "philippines",
+      "filename": "pin-043-solo-arrival-check-in-plan-v1.png",
+      "sourceFilename": "pin-043-solo-arrival-check-in-plan-v1.png",
+      "localPath": "public/pins/philippines/pin-043-solo-arrival-check-in-plan-v1.png",
+      "altText": "Solo traveler checking in from a bright hotel lobby with phone and luggage beneath the words Solo Arrival Check-In Plan.",
+      "sha256": "90ac624defdc03de6d77b73c30ecd777d04174318d51d7d435d18a720e8d49eb"
+    },
+    {
+      "pinId": "pin_044",
+      "sourceConceptId": 44,
+      "canonicalTitle": "Pause Before You Pay: 5 Arrival Scam Checks",
+      "campaign": "philippines",
+      "filename": "pin-044-arrival-scam-payment-checks-v1.png",
+      "sourceFilename": "pin-044-arrival-scam-payment-checks-v1.png",
+      "localPath": "public/pins/philippines/pin-044-arrival-scam-payment-checks-v1.png",
+      "altText": "Traveler calmly checking price and route details at a generic transport counter beneath the words Pause Before You Pay.",
+      "sha256": "a653dcccd6a359a45751ce8a43ca9cc49dc3bc33add65e9e9cfd3befc2919b9a"
+    },
+    {
+      "pinId": "pin_045",
+      "sourceConceptId": 45,
+      "canonicalTitle": "What Goes in Your Philippines First-Night Bag?",
+      "campaign": "philippines",
+      "filename": "pin-045-philippines-first-night-bag-v1.png",
+      "sourceFilename": "pin-045-philippines-first-night-bag-v1.png",
+      "localPath": "public/pins/philippines/pin-045-philippines-first-night-bag-v1.png",
+      "altText": "Open first-night tote on a hotel bed with clothes, toiletries, charger, medicine, and documents beneath the words First-Night Bag Pack This.",
+      "sha256": "ce6740e6c1ff87d70898123d0edda6eb3cf28110119f6f83503729349f0ec4f5"
     }
   ]
 }

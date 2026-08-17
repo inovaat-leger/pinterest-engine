@@ -34,6 +34,7 @@ export async function verifyProductionPinImages(
     if (row.Title !== identity.canonicalTitle) throw new Error(`${identity.pinId} CSV title disagrees with the canonical title.`);
     const utmContent = new URL(row.Link).searchParams.get("utm_content") ?? "";
     if (utmContent !== identity.pinId) throw new Error(`${identity.pinId} CSV UTM content disagrees with the canonical identity.`);
+    if (!identity.driveFileId) throw new Error(`${identity.pinId} does not use the Drive-backed v2 workflow.`);
     const [driveResponse, productionResponse] = await Promise.all([
       fetchImpl(`https://drive.usercontent.google.com/download?id=${encodeURIComponent(identity.driveFileId)}&export=download&confirm=t`, { headers: { Accept: "image/png" } }),
       fetchImpl(expectedUrl, { headers: { Accept: "image/png", "Cache-Control": "no-cache", Pragma: "no-cache" }, credentials: "omit" }),

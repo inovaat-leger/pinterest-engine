@@ -54,11 +54,13 @@ test("approved Philippines Pin IDs retain their exact registry artwork and canon
     ["pin_024", "Save These Philippines Emergency Contacts", "pin_024-philippines-emergency-contacts.png"],
     ["pin_025", "Your First Manila Ride: 5 Pickup Checks", "pin_025-first-manila-ride-pickup-checks.png"],
   ];
-  assert.equal(identities.length, 24);
-  for (const [index, identity] of identities.entries()) {
+  assert.equal(identities.length, 44);
+  for (const [index, identity] of identities.slice(0, 24).entries()) {
     const [pinId, title, source] = expected[index];
     assert.equal(identity.pinId, pinId);
     assert.equal(identity.canonicalTitle, title);
     assert.equal(identity.sourceFilename, source);
   }
+  assert.deepEqual(identities.slice(24).map((identity) => identity.pinId), Array.from({ length: 20 }, (_, index) => `pin_${String(index + 26).padStart(3, "0")}`));
+  assert.ok(identities.slice(24).every((identity) => identity.filename.startsWith(`pin-${identity.pinId.slice(4)}-`) && identity.filename.endsWith("-v1.png") && identity.localPath?.endsWith(identity.filename)));
 });

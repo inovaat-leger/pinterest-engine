@@ -14,6 +14,7 @@ export type PinPreflightResult = {
 };
 
 function localSchedule(value: string, timezone: string): string {
+  if (!value) return "IMMEDIATE";
   const instant = new Date(`${value}Z`);
   if (Number.isNaN(instant.valueOf())) throw new Error(`Invalid Pinterest publish timestamp: ${value}.`);
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -29,11 +30,11 @@ export function validateCanonicalBulkIdentity(
   rows: PinterestBulkRow[],
   schedule: PinterestBulkSchedule,
 ): PinPreflightResult[] {
-  const expectedIds = Array.from({ length: 20 }, (_, index) => `pin_${String(index + 6).padStart(3, "0")}`);
+  const expectedIds = schedule.includePinIds ?? [];
   const identityById = new Map(identities.map((identity) => [identity.pinId, identity]));
   const pinById = new Map(pins.map((pin) => [pin.pinId, pin]));
   if (rows.length !== 20) throw new Error(`Corrected Pinterest bulk file must contain exactly 20 rows; received ${rows.length}.`);
-  if (schedule.includePinIds?.join(",") !== expectedIds.join(",")) throw new Error("Corrected Pinterest bulk selection must contain Pins #6–#25 exactly once and exclude Pins #1–#5.");
+  if (expectedIds.length !== 20 || new Set(expectedIds).size !== 20 || expectedIds.some((pinId) => ["pin_001", "pin_002", "pin_003", "pin_004", "pin_005"].includes(pinId))) throw new Error("Pinterest bulk selection must contain exactly 20 unique non-baseline Pin IDs and exclude Pins #1–#5.");
   const seen = new Set<string>();
   return expectedIds.map((pinId, index) => {
     const identity = identityById.get(pinId);
@@ -47,7 +48,8 @@ export function validateCanonicalBulkIdentity(
     if (pin.title !== identity.canonicalTitle || row.Title !== identity.canonicalTitle) throw new Error(`${pinId} generated title does not match its canonical title.`);
     if (pin.imageFilename !== identity.filename) throw new Error(`${pinId} generated filename does not match its canonical artwork.`);
     const expectedMedia = `https://travel.stampdup.com/pins/${identity.campaign}/${identity.filename}`;
-    if (!identity.filename.endsWith("-v2.png")) throw new Error(`${pinId} must use a new versioned -v2.png Media URL.`);
+    const requiredVersion = Number(pinId.slice(4)) >= 26 ? "-v1.png" : "-v2.png";
+    if (!identity.filename.endsWith(requiredVersion)) throw new Error(`${pinId} must use its new versioned ${requiredVersion} Media URL.`);
     if (pin.imagePublicUrl !== expectedMedia || row["Media URL"] !== expectedMedia) throw new Error(`${pinId} public Media URL does not match its canonical manifest entry.`);
     const content = new URL(row.Link).searchParams.get("utm_content") ?? "";
     if (content !== pinId || new URL(pin.trackedDestinationUrl).searchParams.get("utm_content") !== pinId) throw new Error(`${pinId} UTM content ID disagrees with its canonical Pin ID.`);
@@ -58,7 +60,7 @@ export function validateCanonicalBulkIdentity(
       pinId,
       canonicalTitle: identity.canonicalTitle,
       sourceFilename: identity.sourceFilename,
-      driveFileId: identity.driveFileId,
+      driveFileId: identity.driveFileId ?? identity.localPath ?? "",
       mediaUrl: expectedMedia,
       board: pin.board,
       utmContent: content,
@@ -74,7 +76,7 @@ export function buildPinterestPreflightMarkdown(results: PinPreflightResult[]): 
   const header = [
     "# Corrected Pinterest bulk-upload preflight",
     "",
-    `Validated rows: ${results.length}. Pins #1–#5 are excluded; Pins #6–#25 appear exactly once.`,
+    `Validated rows: ${results.length}. Pins #1–#5 are excluded; ${results[0]?.pinId ?? "no Pins"} through ${results.at(-1)?.pinId ?? "no Pins"} appear exactly once.`,
     "",
     "| Pin ID | Canonical title | Source artwork filename | Drive file ID | Public Media URL | Board | UTM content ID | Scheduled local date/time | Result |",
     "|---|---|---|---|---|---|---|---|---|",

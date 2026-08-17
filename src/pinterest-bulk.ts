@@ -9,6 +9,7 @@ export type PinterestBulkSchedule = {
   dailyTimes: string[];
   pinsPerDay: number;
   includePinIds?: string[];
+  immediateDates?: string[];
 };
 
 export type PinterestBulkRow = Record<(typeof pinterestBulkHeaders)[number], string>;
@@ -67,6 +68,7 @@ export function resolvePinterestBulkSchedule(config: CampaignConfig, overrides: 
     dailyTimes: overrides.dailyTimes ?? configured?.dailyTimes ?? defaultDailyTimes,
     pinsPerDay: overrides.pinsPerDay ?? configured?.pinsPerDay ?? 5,
     includePinIds: overrides.includePinIds ?? configured?.includePinIds,
+    immediateDates: overrides.immediateDates ?? configured?.immediateDates ?? [],
   };
   requireDate(schedule.startDate);
   for (const time of schedule.dailyTimes) requireTime(time);
@@ -75,6 +77,7 @@ export function resolvePinterestBulkSchedule(config: CampaignConfig, overrides: 
     if (schedule.includePinIds.length === 0 || !schedule.includePinIds.every((pinId) => /^pin_\d{3}$/.test(pinId))) throw new Error("Pinterest bulk includePinIds must contain valid pin_### values.");
     if (new Set(schedule.includePinIds).size !== schedule.includePinIds.length) throw new Error("Pinterest bulk includePinIds must be unique.");
   }
+  if (!(schedule.immediateDates ?? []).every((date) => /^\d{4}-\d{2}-\d{2}$/.test(date))) throw new Error("Pinterest bulk immediateDates must contain YYYY-MM-DD dates.");
   localTimeToPinterestUtc(schedule.startDate, schedule.dailyTimes[0], schedule.timezone);
   return schedule;
 }
@@ -109,6 +112,7 @@ export function createPinterestBulkRows(pins: ExperimentPin[], config: CampaignC
     requireHttps(pin.trackedDestinationUrl, `${pin.pinId} Link`);
     const day = Math.floor(index / schedule.pinsPerDay);
     const time = schedule.dailyTimes[index % schedule.pinsPerDay];
+    const localDate = datePlusDays(schedule.startDate, day);
     return {
       "Title": pin.title,
       "Media URL": media.toString(),
@@ -116,7 +120,7 @@ export function createPinterestBulkRows(pins: ExperimentPin[], config: CampaignC
       "Thumbnail": "",
       "Description": pin.description,
       "Link": pin.trackedDestinationUrl,
-      "Publish date": localTimeToPinterestUtc(datePlusDays(schedule.startDate, day), time, schedule.timezone),
+      "Publish date": (schedule.immediateDates ?? []).includes(localDate) ? "" : localTimeToPinterestUtc(localDate, time, schedule.timezone),
       "Keywords": pin.topicTags.join(", "),
     };
   });
