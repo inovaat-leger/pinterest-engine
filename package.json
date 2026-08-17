@@ -17,8 +17,11 @@
     "campaign:performance:import": "node --import tsx src/cli.ts performance-import",
     "campaign:report": "node --import tsx src/cli.ts report",
     "campaign:verify:v2": "node --import tsx src/verify-v2.ts",
-    "campaign:images:build:026-045": "node scripts/build-pin-batch-026-045.mjs",
+    "campaign:images:build:026-045": "node scripts/build-pin-redesign-026-045.mjs",
+    "campaign:images:build:redesign:026-045": "node scripts/build-pin-redesign-026-045.mjs",
+    "campaign:images:register:redesign:026-045": "node scripts/register-pin-redesign-026-045.mjs",
     "campaign:verify:026-045": "node --import tsx src/verify-batch-026-045.ts",
+    "campaign:verify:redesign:026-045": "node --import tsx src/verify-redesign-026-045.ts",
     "test": "node --test dist/*.test.js",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },

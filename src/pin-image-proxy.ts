@@ -159,7 +159,7 @@ export function canonicalPinIdentities(manifest: PinImageManifest, campaign: str
   for (const identity of identities) {
     const number = Number(identity.pinId.slice(4));
     if (number >= 26) {
-      if (!new RegExp(`^pin-${String(number).padStart(3, "0")}-[a-z0-9]+(?:-[a-z0-9]+)*-v1\\.png$`).test(identity.filename)) throw new Error(`${identity.pinId} must use its identity-safe pin-${String(number).padStart(3, "0")}-…-v1.png filename.`);
+      if (!new RegExp(`^pin-${String(number).padStart(3, "0")}-[a-z0-9]+(?:-[a-z0-9]+)*-v(?:[2-9]|[1-9][0-9]+)\\.png$`).test(identity.filename)) throw new Error(`${identity.pinId} must use an identity-safe pin-${String(number).padStart(3, "0")}-…-v2-or-later.png filename.`);
       continue;
     }
     const baseFilename = pinFilename({ id: number, title: identity.canonicalTitle });

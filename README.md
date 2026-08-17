@@ -53,6 +53,8 @@ Public Pin images use allowlisted Google Drive mappings at `/pins/{campaign}/{fi
 
 Pins #26–#45 use the same allowlist and immutable ledger with committed, SHA-256-locked artwork under `public/pins/philippines/`; no external credentials are required for those routes. Their editable production backgrounds stay local and ignored, while the finished 1000×1500 PNGs are committed as the approved bytes. Rebuilding or correcting an image requires a new versioned public filename—an existing route must never be repointed. Build the artwork with `npm run campaign:images:build:026-045`, generate exports with `npm run campaign:export`, then run `npm run campaign:verify:026-045` after deployment. The verifier fetches every live URL without redirects, compares it byte-for-byte with the approved file, and creates the final preflight, contact sheet, and Registry sidecar.
 
+The approved editable layout masters live under `templates/stampdup-travel/stampdup-pinterest-template-kit/editable-svg/`. The Pins #26–#45 visual-redesign workflow renders consumer copy and the approved logo deterministically over topic-specific photography, uses seven distinct template structures, and publishes only new immutable `-v2.png` routes. Run `npm run campaign:verify:redesign:026-045` after deployment to create the Stage 1 live-byte contact sheet and Markdown report. This visual-approval command does not create a Pinterest CSV.
+
 Import completed performance rows and produce reports with:
 
 ```bash

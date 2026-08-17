@@ -37,7 +37,7 @@ test("generate preserves existing outputs and adds complete experiment exports",
   assert.equal(pinterestBulk.length, 20);
   assert.deepEqual(Object.keys(pinterestBulk[0]), ["Title", "Media URL", "Pinterest board", "Thumbnail", "Description", "Link", "Publish date", "Keywords"]);
   assert.equal(pinterestBulk[0].Title, "Philippines Arrival Documents: One Folder, Zero Guesswork");
-  assert.equal(pinterestBulk[0]["Media URL"], "https://travel.stampdup.com/pins/philippines/pin-026-philippines-arrival-documents-one-folder-v1.png");
+  assert.equal(pinterestBulk[0]["Media URL"], "https://travel.stampdup.com/pins/philippines/pin-026-philippines-arrival-documents-one-folder-v2.png");
   assert.deepEqual(pinterestBulk.map((row) => new URL(row.Link).searchParams.get("utm_content")), Array.from({ length: 20 }, (_, index) => `pin_${String(index + 26).padStart(3, "0")}`));
   assert.equal(await readFile(path.join(output, "stampdup-philippines-pins-026-045.csv"), "utf8"), await readFile(path.join(output, "pinterest-bulk-upload.csv"), "utf8"));
   assert.match(await readFile(path.join(output, "stampdup-philippines-pins-026-045-preflight.md"), "utf8"), /pin_045.*What Goes in Your Philippines First-Night Bag.*PASS/);

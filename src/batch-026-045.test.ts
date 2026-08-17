@@ -27,7 +27,7 @@ test("Pins #26–#45 have one immutable canonical identity and approved finished
     assert.equal(identity.canonicalTitle, pin.title);
     assert.equal(identity.filename, pin.filename);
     assert.equal(identity.altText, pin.altText);
-    assert.match(identity.filename, new RegExp(`^pin-${String(index + 26).padStart(3, "0")}-[a-z0-9-]+-v1\\.png$`));
+    assert.match(identity.filename, new RegExp(`^pin-${String(index + 26).padStart(3, "0")}-[a-z0-9-]+-v2\\.png$`));
     assert.ok(identity.localPath);
     const bytes = readFileSync(identity.localPath!);
     const metadata = await sharp(bytes).metadata();
@@ -38,7 +38,23 @@ test("Pins #26–#45 have one immutable canonical identity and approved finished
     const lock = history.images.find(({ campaign, filename }) => campaign === "philippines" && filename === identity.filename);
     assert.equal(lock?.sha256, identity.sha256);
     assert.equal(lock?.localPath, identity.localPath);
+    const retiredV1 = history.images.find(({ campaign, filename }) => campaign === "philippines" && filename === identity.filename.replace("-v2.png", "-v1.png"));
+    assert.ok(retiredV1, `${expectedId} retired v1 route must remain immutable and available.`);
   }
 
   assert.equal(new Set(identities.map(({ sha256: value }) => value)).size, 20);
+});
+
+test("Pins #26–#45 redesign uses approved templates and contains no public placeholders or internal labels", () => {
+  const redesign = JSON.parse(readFileSync("config/pin-redesign-026-045.json", "utf8")).pins as Array<{ id:number; template:string; kicker:string; items:string[] }>;
+  const allowed = new Set(["01-hero-photo-headline", "02-numbered-checklist", "03-mistakes-warning", "04-side-by-side-comparison", "05-timeline-steps", "06-packing-flat-lay", "07-safety-alert", "08-quick-reference-card"]);
+  const prohibited = /(?:\bPIN\s*(?:2[6-9]|3[0-9]|4[0-5])\b|pin_0(?:2[6-9]|3[0-9]|4[0-5])|DESTINATION PHOTO|CHECKLIST ITEM|OPTION [AB]|FIRST DETAIL|SUPPORTING PHOTO|production note)/i;
+  assert.equal(redesign.length, 20);
+  assert.ok(new Set(redesign.map(({ template }) => template)).size >= 7);
+  for (const [index, pin] of redesign.entries()) {
+    assert.equal(pin.id, index + 26);
+    assert.ok(allowed.has(pin.template));
+    assert.ok(!prohibited.test([pin.kicker, ...pin.items].join(" ")));
+    assert.ok(readFileSync(`templates/stampdup-travel/stampdup-pinterest-template-kit/editable-svg/${pin.template}.svg`, "utf8").includes('width="1000" height="1500"'));
+  }
 });

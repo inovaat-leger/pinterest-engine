@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "pins": [
+    {"id":26,"template":"06-packing-flat-lay","kicker":"BEFORE YOU FLY","items":["Passport + current entry info","Onward travel details","Hotel address + contact","Offline copies in one folder"]},
+    {"id":27,"template":"08-quick-reference-card","kicker":"CUSTOMS PREP","items":["Review current official guidance","Know what is inside each bag","Keep declarations accessible","Answer clearly and accurately"]},
+    {"id":28,"template":"05-timeline-steps","kicker":"ARRIVE CHECK-IN READY","items":["Open your booking screenshot","Have identification ready","Confirm payment + deposit details","Share your expected arrival time"]},
+    {"id":29,"template":"02-numbered-checklist","kicker":"SAVE THIS OFFLINE","items":["Hotel name","Full street address","Booking number","Hotel contact"]},
+    {"id":30,"template":"06-packing-flat-lay","kicker":"TROPICAL ARRIVAL","items":["Light breathable layers","Comfortable walking shoes","Sun cover","Rain layer for the forecast"]},
+    {"id":31,"template":"06-packing-flat-lay","kicker":"RAINY-SEASON CARRY-ON","items":["Compact umbrella","Light outer layer","Waterproof document pouch","Quick-dry spare layer"]},
+    {"id":32,"template":"05-timeline-steps","kicker":"A GENTLE ARRIVAL RESET","items":["Drink water","Find shade or air-conditioning","Choose a manageable meal","Keep the first hours light"]},
+    {"id":33,"template":"05-timeline-steps","kicker":"FIRST-NIGHT PLAN","items":["Hydrate after check-in","Choose a light meal","Set essential alarms","Aim for a local bedtime"]},
+    {"id":34,"template":"08-quick-reference-card","kicker":"CALM TIPPING GUIDE","items":["Check for a service charge","Consider service + context","Keep small cash if useful","Choose freely—customs vary"]},
+    {"id":35,"template":"02-numbered-checklist","kicker":"ARRIVE WITH RESPECT","items":["Observe before assuming","Ask when unsure","Speak courteously","Respect shared spaces","Follow local cues"]},
+    {"id":36,"template":"08-quick-reference-card","kicker":"SAVE BEFORE ARRIVAL","items":["Kumusta — Hello","Salamat — Thank you","Saan po…? — Where is…?","Tulong po — Help, please"]},
+    {"id":37,"template":"04-side-by-side-comparison","kicker":"FIRST-DAY CHOICES","items":["KEEP IT SIMPLE|A familiar cooked meal|Water you are comfortable drinking|A pace that suits your body","PAUSE + NOTICE|How you feel after the flight|Your hydration needs|When you need a break"]},
+    {"id":38,"template":"06-packing-flat-lay","kicker":"MEDICATION TRAVEL PREP","sourceBackground":"artwork/source-backgrounds/pin-038-v2.png","items":["Original packaging","Document copies","Dose + timing plan","Personal backup supply"]},
+    {"id":39,"template":"08-quick-reference-card","kicker":"SAVE IT OFFLINE","items":["Policy reference","Assistance contacts","Coverage instructions","Basic claim steps"]},
+    {"id":40,"template":"05-timeline-steps","kicker":"DOMESTIC CONNECTION","items":["Confirm the terminal","Check baggage steps","Allow appropriate transfer time","Keep documents accessible"]},
+    {"id":41,"template":"06-packing-flat-lay","kicker":"FERRY DAY ESSENTIALS","items":["Booking + identification","Water + light layer","Dry pouch for sensitive items","Operator instructions offline"]},
+    {"id":42,"template":"04-side-by-side-comparison","kicker":"PACK FOR TRANSFERS","items":["MAIN BAG|Clothing + larger items|Easy to move and identify|Within operator limits","DAY BAG|Documents + valuables|Water + personal essentials|Always within reach"]},
+    {"id":43,"template":"07-safety-alert","kicker":"SOLO ARRIVAL","items":["Share your arrival plan","Confirm hotel details","Keep transport info offline","Check in from a bright public place"]},
+    {"id":44,"template":"03-mistakes-warning","kicker":"ARRIVAL PAYMENT CHECKS","items":["Confirm the provider","Confirm price + route","Check payment details","Ask for a receipt","Pause if details do not match"]},
+    {"id":45,"template":"06-packing-flat-lay","kicker":"FIRST-NIGHT BAG","items":["Fresh layer + toiletries","Charger + sleep basics","Personal medication","Documents + hotel details"]}
+  ]
+}
