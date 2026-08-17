@@ -1,4 +1,29 @@
 {
   "schemaVersion": 1,
-  "images": []
+  "images": [
+    { "pinId": "pin_002", "campaign": "philippines", "filename": "manila-airport-to-your-hotel-know-your-options.png", "sourceFilename": "Pin2-5.png", "driveFileId": "1l-nkGqTxA0eC0kTX4YIyibIk_6JhrY0I" },
+    { "pinId": "pin_003", "campaign": "philippines", "filename": "the-philippines-travel-checklist-people-forget.png", "sourceFilename": "Pin2-5b.png", "driveFileId": "1vn1Nea4TMAWaOC6QNEd2tg-PFiUrQbs3" },
+    { "pinId": "pin_004", "campaign": "philippines", "filename": "your-first-72-hours-in-the-philippines.png", "sourceFilename": "Pin2-5c.png", "driveFileId": "1clsAgp5-YXYHXKUeMZGXC5sWJk6qIcK_" },
+    { "pinId": "pin_005", "campaign": "philippines", "filename": "philippines-cash-and-atm-prep-before-you-land.png", "sourceFilename": "Pin2-5d.png", "driveFileId": "1_MFYJzI1WhwIm4IAIi5bh3csIyaoHOYe" },
+    { "pinId": "pin_006", "campaign": "philippines", "filename": "dont-make-these-5-esim-setup-mistakes.png", "sourceFilename": "Land in Manila Connected.png", "driveFileId": "1vtL5dxPPZ27RGph-bf_PFvJl2TMvhW2T" },
+    { "pinId": "pin_007", "campaign": "philippines", "filename": "what-first-time-visitors-need-at-manila-airport.png", "sourceFilename": "Set Up Your eSIM Before Takeoff.png", "driveFileId": "104puyvfRygI0nCVgMBZXB0W6UY0Cf-ey" },
+    { "pinId": "pin_008", "campaign": "philippines", "filename": "a-digital-nomads-philippines-connectivity-plan.png", "sourceFilename": "First Time at Manila Airport.png", "driveFileId": "1DfhBO88pRbWVGnP8CkawtRhTe9PYusjK" },
+    { "pinId": "pin_009", "campaign": "philippines", "filename": "9-philippines-arrival-mistakes-to-avoid.png", "sourceFilename": "Physical SIM or eSIM.png", "driveFileId": "1bzPjy46CARzOpypdX5GN64z1yoM_rG4a" },
+    { "pinId": "pin_010", "campaign": "philippines", "filename": "can-you-keep-your-home-number-with-an-esim.png", "sourceFilename": "Your Connected First 24 Hours in Manila.png", "driveFileId": "1fV-6BPpNL2GvFGJPH3mdjEwVwNroH0Jy" },
+    { "pinId": "pin_011", "campaign": "philippines", "filename": "set-up-your-philippines-esim-before-takeoff.png", "sourceFilename": "How Much Mobile Data Do You Need.png", "driveFileId": "1Dyl-ccF_YdCwdTgfIXt68rnQK-qXC_nZ" },
+    { "pinId": "pin_012", "campaign": "philippines", "filename": "your-connected-first-24-hours-in-manila.png", "sourceFilename": "pin_012-philippines-arrival-mistakes.png", "driveFileId": "1Ed2QXiiFqmLglO7T1jZ_oI_YxMfZyebE" },
+    { "pinId": "pin_013", "campaign": "philippines", "filename": "physical-sim-or-esim-for-the-philippines.png", "sourceFilename": "pin_013-digital-nomad-connectivity-plan.png", "driveFileId": "1Mv7NunLqWAHbo5Xcaq-M4Vnv73U9_YKz" },
+    { "pinId": "pin_014", "campaign": "philippines", "filename": "save-this-offline-before-flying-to-manila.png", "sourceFilename": "pin_014-backup-internet-remote-work.png", "driveFileId": "189ekZL7cKDQVpgCYU-Z5Aw_hY5E-7aBs" },
+    { "pinId": "pin_015", "campaign": "philippines", "filename": "your-backup-internet-plan-for-remote-work.png", "sourceFilename": "pin_015-keep-home-number-with-esim.png", "driveFileId": "1mRwuZFxR3UQZT6aj8pF_94T6xTLBKCV9" },
+    { "pinId": "pin_016", "campaign": "philippines", "filename": "is-your-phone-ready-for-a-philippines-esim.png", "sourceFilename": "pin_016-phone-ready-philippines-esim.png", "driveFileId": "1v-cgwTtFd8QMP8RfcKv9UljFJoX-F-hM" },
+    { "pinId": "pin_017", "campaign": "philippines", "filename": "when-should-you-activate-a-philippines-esim.png", "sourceFilename": "pin_017-esim-setup-mistakes.png", "driveFileId": "1_Oq2uMNfVKEDsNXdflg8D8u1xQOkcRsp" },
+    { "pinId": "pin_018", "campaign": "philippines", "filename": "essential-apps-for-your-first-philippines-trip.png", "sourceFilename": "pin_018-esim-activation-timing.png", "driveFileId": "1517dcKOfCQCB0vQBqbz09nKI9fZkZay8" },
+    { "pinId": "pin_019", "campaign": "philippines", "filename": "land-in-manila-with-data-already-working.png", "sourceFilename": "pin_019-save-offline-before-manila.png", "driveFileId": "1Zcjfu_KiMhF5l8s6WSe63JsC2Qa2PpOT" },
+    { "pinId": "pin_020", "campaign": "philippines", "filename": "the-smart-way-to-use-maps-without-burning-data.png", "sourceFilename": "pin_020-essential-apps-first-philippines-trip.png", "driveFileId": "1k16qduOh755a16utx1ZFQ-ro87sC0EyX" },
+    { "pinId": "pin_021", "campaign": "philippines", "filename": "how-much-mobile-data-do-you-need-in-the-philippines.png", "sourceFilename": "pin_021-airport-wifi-not-only-plan.png", "driveFileId": "1llkwTa0ts1OHEdzsSeMhWa8RPuaKJROo" },
+    { "pinId": "pin_022", "campaign": "philippines", "filename": "why-airport-wi-fi-shouldnt-be-your-only-plan.png", "sourceFilename": "pin_022-philippines-plug-voltage-charging-prep.png", "driveFileId": "1tHcSlsxz6oaLoVY-wLeVIcYtpu0QrgcR" },
+    { "pinId": "pin_023", "campaign": "philippines", "filename": "useful-apps-to-set-up-for-a-philippines-arrival.png", "sourceFilename": "pin_023-maps-without-burning-data.png", "driveFileId": "14R8s3IcFhGas4bFBrVOAVlcBSDa3W-Yt" },
+    { "pinId": "pin_024", "campaign": "philippines", "filename": "add-these-6-esim-checks-to-your-arrival-plan.png", "sourceFilename": "pin_024-philippines-emergency-contacts.png", "driveFileId": "1Q9c6pXOLRJ6dycaUgOAv_q0Mz6uf4sde" },
+    { "pinId": "pin_025", "campaign": "philippines", "filename": "a-smoother-philippines-arrival-starts-before-landing.png", "sourceFilename": "pin_025-first-manila-ride-pickup-checks.png", "driveFileId": "1f7_cFmN_5q6SObtBJGgbF-ZRgoFdt7yS" }
+  ]
 }

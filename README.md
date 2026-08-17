@@ -42,7 +42,7 @@ npm run campaign:export
 
 The Philippines campaign produces a deliberate 20-Pin sprint—five Pins per week for four weeks—with five concepts held in reserve. Pin #1 is the existing untagged baseline. Pins #2 onward receive stable, unique Pinterest organic UTM URLs. See the [experiment operating guide](docs/PINTEREST_EXPERIMENT_OPERATIONS.md) for the schedule, Pin/experiment IDs, reserve policy, publication workflow, event mapping, performance imports, report commands, and interpretation limits.
 
-Public Pin images use allowlisted Google Drive mappings at `/pins/{campaign}/{filename}`. The Pinterest-native export schedules five planned Pins per day by default and can be configured by campaign settings or CLI flags. See [public Pin images and Pinterest bulk upload](docs/PIN_IMAGE_AND_BULK_UPLOAD.md) for the manifest schema, verification commands, timezone conversion, and manual Import content workflow.
+Public Pin images use allowlisted Google Drive mappings at `/pins/{campaign}/{filename}`. The Pinterest-native export schedules five selected Pins per day by default and can be configured by campaign settings or CLI flags. See [public Pin images and Pinterest bulk upload](docs/PIN_IMAGE_AND_BULK_UPLOAD.md) for the manifest schema, verification commands, timezone conversion, and manual Import content workflow.
 
 Import completed performance rows and produce reports with:
 

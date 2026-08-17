@@ -11,8 +11,10 @@ The manifest schema is:
   "schemaVersion": 1,
   "images": [
     {
+      "pinId": "pin_002",
       "campaign": "philippines",
       "filename": "manila-airport-to-your-hotel-know-your-options.png",
+      "sourceFilename": "Pin2-5.png",
       "driveFileId": "GOOGLE_DRIVE_FILE_ID"
     }
   ]
@@ -48,10 +50,11 @@ The campaign config contains:
 {
   "publicImageCampaignSlug": "philippines",
   "pinterestBulkSchedule": {
-    "startDate": "2026-08-18",
+    "startDate": "2026-08-22",
     "timezone": "America/Chicago",
     "dailyTimes": ["08:00", "11:00", "14:00", "17:00", "20:00"],
-    "pinsPerDay": 5
+    "pinsPerDay": 5,
+    "includePinIds": ["pin_006", "...", "pin_025"]
   }
 }
 ```
@@ -66,15 +69,15 @@ Override the schedule without editing campaign configuration:
 
 ```bash
 npm run campaign:export -- \
-  --bulk-start-date 2026-08-18 \
+  --bulk-start-date 2026-08-22 \
   --bulk-timezone America/Chicago \
   --bulk-times 08:00,11:00,14:00,17:00,20:00 \
   --bulk-pins-per-day 5
 ```
 
-Only non-reserve Pins whose publication status is `planned` are included. The existing baseline and reserve concepts are excluded. With the current experiment this produces 19 rows, beginning with `pin_002`. Promote a reserve concept deliberately before expecting it in a publishing file.
+When `includePinIds` is present, only those Pins are exported in the listed order. The current campaign selects `pin_006` through `pin_025`, producing exactly 20 rows over four full five-Pin days. Pins #1–#5 are excluded; Pins #2–#5 remain in the image manifest because their manually scheduled Pins still need public media URLs. Without `includePinIds`, the fallback remains non-reserve Pins whose publication status is `planned`.
 
-Local wall-clock times are converted using the configured IANA timezone and its daylight-saving rules. Pinterest requires UTC for a specific publish time, so `2026-08-18 08:00` in `America/Chicago` becomes `2026-08-18T13:00:00` in the CSV. The timestamp intentionally omits a trailing `Z` to match Pinterest’s documented example while the value itself is UTC.
+Local wall-clock times are converted using the configured IANA timezone and its daylight-saving rules. Pinterest requires UTC for a specific publish time, so `2026-08-22 08:00` in `America/Chicago` becomes `2026-08-22T13:00:00` in the CSV. The timestamp intentionally omits a trailing `Z` to match Pinterest’s documented example while the value itself is UTC.
 
 The exporter enforces exact headers, HTTPS media and destination URLs, nonempty boards, unique image filenames and media URLs, title and description limits, chronological slots, and the 200-row maximum. `Link` retains each Pin’s unique campaign UTM URL. Image rows leave `Thumbnail` blank.
 

@@ -16,6 +16,7 @@ export type PinterestBulkScheduleConfig = {
   timezone: string;
   dailyTimes: string[];
   pinsPerDay: number;
+  includePinIds?: string[];
 };
 
 export type CampaignConfig = {

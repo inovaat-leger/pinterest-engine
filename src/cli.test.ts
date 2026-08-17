@@ -33,9 +33,9 @@ test("generate preserves existing outputs and adds complete experiment exports",
   assert.equal(schedule.filter((row) => row.reserve === "no").length, 20);
   assert.equal(schedule.filter((row) => row.reserve === "yes").length, 5);
   assert.equal(performance.length, 60);
-  assert.equal(pinterestBulk.length, 19);
+  assert.equal(pinterestBulk.length, 20);
   assert.deepEqual(Object.keys(pinterestBulk[0]), ["Title", "Media URL", "Pinterest board", "Thumbnail", "Description", "Link", "Publish date", "Keywords"]);
-  assert.equal(pinterestBulk[0]["Media URL"], "https://travel.stampdup.com/pins/philippines/manila-airport-to-your-hotel-know-your-options.png");
+  assert.equal(pinterestBulk[0]["Media URL"], "https://travel.stampdup.com/pins/philippines/dont-make-these-5-esim-setup-mistakes.png");
   assert.equal(manifest.experiment.activePinCount, 20);
   assert.equal(manifest.experiment.reservePinCount, 5);
   assert.equal(pins[0].tracked_destination_url, "https://travel.stampdup.com/philippines-arrival-kit");

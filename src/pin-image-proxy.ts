@@ -4,8 +4,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 export type PinImageManifestEntry = {
+  pinId?: string;
   campaign: string;
   filename: string;
+  sourceFilename?: string;
   driveFileId?: string;
   sourceUrl?: string;
 };
@@ -82,11 +84,18 @@ export function validatePinImageManifest(input: unknown): PinImageManifest {
   const manifest = input as Partial<PinImageManifest>;
   if (manifest.schemaVersion !== 1 || !Array.isArray(manifest.images)) throw new Error("Unsupported Pin image manifest schema.");
   const seen = new Set<string>();
+  const seenPinIds = new Set<string>();
   for (const entry of manifest.images) {
     if (!entry || typeof entry !== "object" || !validCampaign(entry.campaign) || !validFilename(entry.filename)) throw new Error("Pin image manifest contains an invalid campaign or filename.");
     const key = `${entry.campaign}/${entry.filename}`;
     if (seen.has(key)) throw new Error(`Duplicate Pin image manifest entry: ${key}.`);
     seen.add(key);
+    if (entry.pinId !== undefined) {
+      if (!/^pin_\d{3}$/.test(entry.pinId) || entry.pinId === "pin_000") throw new Error(`Invalid Pin ID in image manifest: ${entry.pinId}.`);
+      if (seenPinIds.has(entry.pinId)) throw new Error(`Duplicate Pin image manifest Pin ID: ${entry.pinId}.`);
+      seenPinIds.add(entry.pinId);
+    }
+    if (entry.sourceFilename !== undefined && (!entry.sourceFilename.trim() || /[\\/]/.test(entry.sourceFilename))) throw new Error(`Invalid source filename for ${key}.`);
     sourceFor(entry);
   }
   return manifest as PinImageManifest;

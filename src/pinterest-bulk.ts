@@ -8,6 +8,7 @@ export type PinterestBulkSchedule = {
   timezone: string;
   dailyTimes: string[];
   pinsPerDay: number;
+  includePinIds?: string[];
 };
 
 export type PinterestBulkRow = Record<(typeof pinterestBulkHeaders)[number], string>;
@@ -65,10 +66,15 @@ export function resolvePinterestBulkSchedule(config: CampaignConfig, overrides: 
     timezone: overrides.timezone ?? configured?.timezone ?? config.experiment?.timezone ?? "America/Chicago",
     dailyTimes: overrides.dailyTimes ?? configured?.dailyTimes ?? defaultDailyTimes,
     pinsPerDay: overrides.pinsPerDay ?? configured?.pinsPerDay ?? 5,
+    includePinIds: overrides.includePinIds ?? configured?.includePinIds,
   };
   requireDate(schedule.startDate);
   for (const time of schedule.dailyTimes) requireTime(time);
   if (!Number.isInteger(schedule.pinsPerDay) || schedule.pinsPerDay < 1 || schedule.pinsPerDay > schedule.dailyTimes.length) throw new Error("Pinterest bulk pinsPerDay must be a positive integer no greater than the number of daily times.");
+  if (schedule.includePinIds) {
+    if (schedule.includePinIds.length === 0 || !schedule.includePinIds.every((pinId) => /^pin_\d{3}$/.test(pinId))) throw new Error("Pinterest bulk includePinIds must contain valid pin_### values.");
+    if (new Set(schedule.includePinIds).size !== schedule.includePinIds.length) throw new Error("Pinterest bulk includePinIds must be unique.");
+  }
   localTimeToPinterestUtc(schedule.startDate, schedule.dailyTimes[0], schedule.timezone);
   return schedule;
 }
@@ -81,7 +87,13 @@ function requireHttps(value: string, label: string): URL {
 }
 
 export function createPinterestBulkRows(pins: ExperimentPin[], config: CampaignConfig, schedule: PinterestBulkSchedule): PinterestBulkRow[] {
-  const selected = pins.filter((pin) => pin.publicationStatus === "planned" && !pin.isReserve);
+  const selected = schedule.includePinIds
+    ? schedule.includePinIds.map((pinId) => {
+      const pin = pins.find((candidate) => candidate.pinId === pinId);
+      if (!pin) throw new Error(`Pinterest bulk selection references unknown Pin ID: ${pinId}.`);
+      return pin;
+    })
+    : pins.filter((pin) => pin.publicationStatus === "planned" && !pin.isReserve);
   if (selected.length > 200) throw new Error(`Pinterest bulk upload supports at most 200 rows; received ${selected.length}.`);
   const filenames = new Set<string>();
   const mediaUrls = new Set<string>();

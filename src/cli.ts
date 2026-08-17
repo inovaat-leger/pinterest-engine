@@ -50,6 +50,7 @@ function validate(input: unknown): CampaignConfig {
     if (typeof schedule.startDate !== "string" || typeof schedule.timezone !== "string") throw new Error("Pinterest bulk startDate and timezone must be strings.");
     if (!Array.isArray(schedule.dailyTimes) || schedule.dailyTimes.length === 0 || !schedule.dailyTimes.every((time) => typeof time === "string")) throw new Error("Pinterest bulk dailyTimes must be a non-empty string array.");
     if (!Number.isInteger(schedule.pinsPerDay)) throw new Error("Pinterest bulk pinsPerDay must be an integer.");
+    if (schedule.includePinIds !== undefined && (!Array.isArray(schedule.includePinIds) || !schedule.includePinIds.every((pinId) => typeof pinId === "string"))) throw new Error("Pinterest bulk includePinIds must be a string array.");
   }
   if (value.experiment !== undefined) {
     if (!value.experiment || typeof value.experiment !== "object") throw new Error('Config field "experiment" must be an object.');

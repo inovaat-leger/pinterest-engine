@@ -7,10 +7,16 @@
   "campaignId": "philippines_arrival_kit",
   "publicImageCampaignSlug": "philippines",
   "pinterestBulkSchedule": {
-    "startDate": "2026-08-18",
+    "startDate": "2026-08-22",
     "timezone": "America/Chicago",
     "dailyTimes": ["08:00", "11:00", "14:00", "17:00", "20:00"],
-    "pinsPerDay": 5
+    "pinsPerDay": 5,
+    "includePinIds": [
+      "pin_006", "pin_007", "pin_008", "pin_009", "pin_010",
+      "pin_011", "pin_012", "pin_013", "pin_014", "pin_015",
+      "pin_016", "pin_017", "pin_018", "pin_019", "pin_020",
+      "pin_021", "pin_022", "pin_023", "pin_024", "pin_025"
+    ]
   },
   "experiment": {
     "id": "philippines_arrival_kit_4_week_2026_08",
