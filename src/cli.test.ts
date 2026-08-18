@@ -17,7 +17,7 @@ test("generate preserves existing outputs and adds complete experiment exports",
     "campaign.json", "pins.csv", "image-prompts.csv", "manual-posting.csv",
     "canva-bulk-create.csv", "pin-image-production.json", "experiment-schedule.csv",
     "performance-entry.csv", "experiment-manifest.json",
-    "pinterest-bulk-upload.csv", "stampdup-philippines-pins-026-045.csv",
+    "pinterest-bulk-upload.csv", "stampdup-philippines-pinterest-schedule-2026-08-22.csv",
     "stampdup-philippines-pins-026-045-preflight.md",
   ];
   await Promise.all(expectedFiles.map((filename) => readFile(path.join(output, filename), "utf8")));
@@ -37,9 +37,13 @@ test("generate preserves existing outputs and adds complete experiment exports",
   assert.equal(pinterestBulk.length, 20);
   assert.deepEqual(Object.keys(pinterestBulk[0]), ["Title", "Media URL", "Pinterest board", "Thumbnail", "Description", "Link", "Publish date", "Keywords"]);
   assert.equal(pinterestBulk[0].Title, "Philippines Arrival Documents: One Folder, Zero Guesswork");
-  assert.equal(pinterestBulk[0]["Media URL"], "https://travel.stampdup.com/pins/philippines/pin-026-philippines-arrival-documents-one-folder-v2.png");
+  assert.equal(pinterestBulk[0]["Media URL"], "https://travel.stampdup.com/pins/philippines/pin-026-philippines-arrival-documents-one-folder-v3.png");
   assert.deepEqual(pinterestBulk.map((row) => new URL(row.Link).searchParams.get("utm_content")), Array.from({ length: 20 }, (_, index) => `pin_${String(index + 26).padStart(3, "0")}`));
-  assert.equal(await readFile(path.join(output, "stampdup-philippines-pins-026-045.csv"), "utf8"), await readFile(path.join(output, "pinterest-bulk-upload.csv"), "utf8"));
+  assert.deepEqual(pinterestBulk.slice(0, 6).map((row) => row["Publish date"]), [
+    "2026-08-22T12:00:00", "2026-08-22T15:30:00", "2026-08-22T19:00:00",
+    "2026-08-22T22:30:00", "2026-08-23T02:00:00", "2026-08-23T12:00:00",
+  ]);
+  assert.equal(await readFile(path.join(output, "stampdup-philippines-pinterest-schedule-2026-08-22.csv"), "utf8"), await readFile(path.join(output, "pinterest-bulk-upload.csv"), "utf8"));
   assert.match(await readFile(path.join(output, "stampdup-philippines-pins-026-045-preflight.md"), "utf8"), /pin_045.*What Goes in Your Philippines First-Night Bag.*PASS/);
   assert.equal(manifest.experiment.activePinCount, 20);
   assert.equal(manifest.experiment.reservePinCount, 25);

@@ -10,11 +10,11 @@
   "pinImageHistory": "config/pin-image-history.json",
   "additionalPinsFile": "config/pin-batch-026-045.json",
   "pinterestBulkSchedule": {
-    "startDate": "2026-08-17",
+    "startDate": "2026-08-22",
     "timezone": "America/Chicago",
-    "dailyTimes": ["07:00", "12:00", "16:00", "20:00"],
-    "pinsPerDay": 4,
-    "immediateDates": ["2026-08-17"],
+    "dailyTimes": ["07:00", "10:30", "14:00", "17:30", "21:00"],
+    "pinsPerDay": 5,
+    "immediateDates": [],
     "includePinIds": [
       "pin_026", "pin_027", "pin_028", "pin_029", "pin_030",
       "pin_031", "pin_032", "pin_033", "pin_034", "pin_035",

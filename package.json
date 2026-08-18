@@ -21,6 +21,7 @@
     "campaign:images:build:redesign:026-045": "node scripts/build-pin-redesign-026-045.mjs",
     "campaign:verify:026-045": "node --import tsx src/verify-batch-026-045.ts",
     "campaign:verify:redesign:026-045": "node --import tsx src/verify-redesign-026-045.ts",
+    "campaign:verify:stage2:026-045": "node --import tsx src/verify-stage2-026-045.ts",
     "test": "node --test dist/*.test.js",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },

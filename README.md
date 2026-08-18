@@ -55,6 +55,8 @@ Pins #26–#45 use the same allowlist and immutable ledger with committed, SHA-2
 
 The approved editable layout masters live under `templates/stampdup-travel/stampdup-pinterest-template-kit/editable-svg/`. The Pins #26–#45 visual-redesign workflow renders consumer copy and the approved logo deterministically over topic-specific photography, uses seven distinct template structures, and publishes only new immutable `-v2.png` routes. Run `npm run campaign:verify:redesign:026-045` after deployment to create the Stage 1 live-byte contact sheet and Markdown report. This visual-approval command does not create a Pinterest CSV.
 
+The approved Stage 2 artwork mapping is recorded in `config/pin-approved-drive-026-045.json`. It binds each Pin ID to the explicitly approved Drive file, source filename, immutable public filename, and SHA-256. The August 22–25 batch schedules five Pins per local day at 7:00 AM, 10:30 AM, 2:00 PM, 5:30 PM, and 9:00 PM America/Chicago. Generate the native upload file with `npm run campaign:export`, then—after deployment—run `npm run campaign:verify:stage2:026-045` to compare Drive and production bytes, validate all diagnostics and CSV identities, and generate the live contact sheet and final preflight report.
+
 Import completed performance rows and produce reports with:
 
 ```bash

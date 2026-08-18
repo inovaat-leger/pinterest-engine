@@ -24,12 +24,14 @@ async function main(): Promise<void> {
   for (const [index, identity] of identities.entries()) {
     const pin = batch[index], spec = specs[index], expected = `pin_${String(index + 26).padStart(3, "0")}`;
     if (identity.pinId !== expected || pin.id !== index + 26 || spec.id !== index + 26 || identity.canonicalTitle !== pin.title || identity.filename !== pin.filename) throw new Error(`${expected} canonical identity mismatch.`);
-    if (!/-v(?:2|3)\.png$/.test(identity.filename) || previous.has(identity.filename)) throw new Error(`${expected} does not use a fresh redesign filename.`);
+    if (!/-v[2-9][0-9]*\.png$/.test(identity.filename) || previous.has(identity.filename)) throw new Error(`${expected} does not use a fresh redesign filename.`);
     const visibleText = [pin.overlayText, pin.supportingText, spec.kicker, ...spec.items].join(" ");
     if (forbidden.test(visibleText)) throw new Error(`${expected} consumer text contains a prohibited label or placeholder.`);
     const sourceTemplate = await readFile(`templates/stampdup-travel/stampdup-pinterest-template-kit/editable-svg/${spec.template}.svg`, "utf8");
     if (!sourceTemplate.includes('width="1000" height="1500"')) throw new Error(`${expected} template master is invalid.`);
-    const local = await readFile(identity.localPath!);
+    const local = identity.localPath
+      ? await readFile(identity.localPath)
+      : Buffer.from(await (await fetch(`https://drive.usercontent.google.com/download?id=${encodeURIComponent(identity.driveFileId!)}&export=download&confirm=t`)).arrayBuffer());
     const url = `https://travel.stampdup.com/pins/philippines/${identity.filename}`;
     const response = await fetch(url, { redirect:"manual", credentials:"omit", headers:{ Accept:"image/png", "Cache-Control":"no-cache", Pragma:"no-cache" } });
     const live = Buffer.from(await response.arrayBuffer());

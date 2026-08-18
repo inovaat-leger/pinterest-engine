@@ -482,7 +482,7 @@ async function writeCampaignOutputs(options: GenerateOptions, action: "Generated
     writeFile(path.join(outputDir, "pinterest-bulk-upload.csv"), bulkCsv),
   ];
   if (preflight) files.push(
-    writeFile(path.join(outputDir, schedule.includePinIds?.[0] === "pin_026" ? "stampdup-philippines-pins-026-045.csv" : "stampdup-philippines-pinterest-v2-schedule.csv"), bulkCsv),
+    writeFile(path.join(outputDir, schedule.includePinIds?.[0] === "pin_026" ? `stampdup-philippines-pinterest-schedule-${schedule.startDate}.csv` : "stampdup-philippines-pinterest-v2-schedule.csv"), bulkCsv),
     writeFile(path.join(outputDir, schedule.includePinIds?.[0] === "pin_026" ? "stampdup-philippines-pins-026-045-preflight.md" : "stampdup-philippines-v2-preflight.md"), buildPinterestPreflightMarkdown(preflight)),
   );
   await Promise.all(files);
