@@ -3,6 +3,7 @@ import { createServer, type IncomingMessage, type Server, type ServerResponse } 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createDefaultPinImageService, PinImageService, PinImageUpstreamError } from "./pin-image-proxy.js";
+import { analyticsScript, ingestAnalytics } from "./analytics.js";
 
 const productionOrigin = "https://travel.stampdup.com";
 const brandName = "StampdUp Travel";
@@ -235,7 +236,7 @@ function page({ title, description, canonicalPath, body }: PageMetadata): string
   <meta name="twitter:card" content="summary_large_image">
   <style>${baseStyles}</style>
 </head>
-<body>${header()}<main>${body}</main>${footer()}</body>
+<body>${header()}<main>${body}</main>${footer()}${analyticsScript}</body>
 </html>`;
 }
 
@@ -249,7 +250,7 @@ function homePage(url: URL): string {
       <p class="eyebrow">${tagline}</p>
       <h1>Arrive prepared. Start with confidence.</h1>
       <p class="lead">Calm, practical destination tools for the details between booking the flight and settling into your first days.</p>
-      <div class="actions"><a class="button" href="${kitHref}">Explore the Philippines Arrival Kit</a></div>
+      <div class="actions"><a class="button" data-analytics="primary_cta" href="${kitHref}">Explore the Philippines Arrival Kit</a></div>
     </div><img class="hero-mark" src="/assets/PinLogo.png" width="330" height="330" alt="StampdUp Travel compact logo with a palm tree, airplane, sun, and ocean"></div></section>
     <section class="section alt"><div class="wrap"><div class="section-heading"><h2>Useful before you need it</h2><p>Destination-specific preparation without pressure, exaggerated promises, or one-size-fits-all assumptions.</p></div><div class="grid">
       <article class="card"><h3>Prepare offline</h3><p>Keep critical documents, addresses, routes, and setup instructions available after landing.</p></article>
@@ -278,7 +279,7 @@ function arrivalKitPage(url: URL): string {
       <p class="eyebrow">Philippines travel planning</p>
       <h1>Philippines Arrival Kit</h1>
       <p class="lead">A practical first-72-hours travel kit for first-time Philippines travelers and digital nomads.</p>
-      <div class="actions no-print"><a class="button" href="${checklistHref}">Open the free arrival checklist</a><a class="button secondary" href="${downloadHref}" download>Download text checklist</a></div>
+      <div class="actions no-print"><a class="button" data-analytics="primary_cta" href="${checklistHref}">Open the free arrival checklist</a><a class="button secondary" href="${downloadHref}" download>Download text checklist</a></div>
       <p class="trust-note">No account or email required. Verify current official entry requirements separately before travel.</p>
     </div><img class="hero-mark" src="/assets/PinLogo.png" width="330" height="330" alt="StampdUp Travel compact logo with a palm tree, airplane, sun, and ocean"></div></section>
 
@@ -452,6 +453,10 @@ async function handleRequest(request: IncomingMessage, response: ServerResponse,
     logEvent("arrival_checklist_print", url);
     response.writeHead(204, { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" });
     response.end();
+    return;
+  }
+  if (url.pathname === "/events") {
+    await ingestAnalytics(request, response);
     return;
   }
   if (request.method !== "GET" && request.method !== "HEAD") {

@@ -42,6 +42,18 @@ test("health route returns JSON status", async () => {
   assert.deepEqual(await response.json(), { status: "ok" });
 });
 
+test("analytics endpoint accepts POST before the general method gate", async () => {
+  const previousUrl = process.env.STAMPDUP_OS_ANALYTICS_URL;
+  delete process.env.STAMPDUP_OS_ANALYTICS_URL;
+  try {
+    const response = await fetch(`${baseUrl}/events`, { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
+    assert.equal(response.status, 503);
+  } finally {
+    if (previousUrl === undefined) delete process.env.STAMPDUP_OS_ANALYTICS_URL;
+    else process.env.STAMPDUP_OS_ANALYTICS_URL = previousUrl;
+  }
+});
+
 test("homepage uses approved branding and links to the Arrival Kit", async () => {
   const response = await fetch(`${baseUrl}/?utm_source=pinterest&utm_campaign=arrival-kit`);
   const html = await response.text();

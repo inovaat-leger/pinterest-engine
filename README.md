@@ -83,6 +83,8 @@ node dist/cli.js generate --config campaign.example.json
 
 ## Website
 
+The website records privacy-minimized first-party analytics through `/events`. Original UTM values (including `utm_content=pin_###`) are retained for the browser session. Configure `STAMPDUP_OS_ANALYTICS_URL` to the existing StampdUp OS private ingestion route and use the same long `STAMPDUP_ANALYTICS_INGEST_SECRET` on both existing Railway services. No raw IP address is persisted.
+
 The same repository includes the dependency-light StampdUp Travel website served by Node's HTTP server:
 
 - `/` — StampdUp Travel homepage
